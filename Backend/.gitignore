@@ -1,0 +1,7 @@
+# environment variable file
+.env
+
+# node modules folder
+node_modules/
+
+index.js
