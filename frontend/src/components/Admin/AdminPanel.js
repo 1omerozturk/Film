@@ -4,6 +4,8 @@ import 'react-toastify/dist/ReactToastify.css'
 import { deleteMovieById, fetchMovies } from '../../Api/api'
 import MovieForm from '../Movie/MovieForm'
 import BgImage from '../../images/bg.jpeg'
+import { Link } from 'react-router-dom/cjs/react-router-dom.min'
+import showToast from '../Alert/ShowToast'
 
 const AdminPanel = () => {
   const [movies, setMovies] = useState([])
@@ -132,6 +134,7 @@ const handleDeleteClick = async (movie) => {
         </h1>
         <ul className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {movies.map((movie) => (
+            <Link to={`/movie/${movie._id}`}>
             <li
               className="rounded-2xl text-center mb-0 pb-0   bg-gradient-to-b to-slate-300 text-white px-2 my-0 h-full via-sky-400 from-black"
               key={movie._id}
@@ -159,6 +162,7 @@ const handleDeleteClick = async (movie) => {
                 </button>
               </div>
             </li>
+            </Link>
           ))}
         </ul>
       </div>

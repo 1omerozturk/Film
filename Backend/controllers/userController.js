@@ -2,6 +2,7 @@
 
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -27,15 +28,16 @@ exports.loginUser = async (req, res) => {
 exports.register = async (req, res) => {
   try {
       const { username, email, password } = req.body;
-      let user = await User.findOne({ email });
+      var user = await User.findOne({ email });
       if (user) return res.status(400).json({ error: 'Email zaten kullanılıyor' });
 
       user = new User({ username, email, password });
       await user.save();
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1m' });
       res.status(201).json({ token });
   } catch (err) {
       res.status(500).json({ error: 'Server Error' });
+      console.log('kullanıcı kayıt hatası.',err)
   }
 };

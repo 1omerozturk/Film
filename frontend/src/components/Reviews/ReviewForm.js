@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { createReview, fetchMovies, getMovieReviews, updateReview } from '../../Api/api'
 import ReactStars from 'react-rating-stars-component'
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 
 const ReviewForm = ({ movieId,onReviewAdded }) => {
   const [rating, setRating] = useState(1)
   const [comment, setComment] = useState('')
   const [reviews, setReviews] = useState([])
- 
+ const history=useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const user = JSON.parse(localStorage.getItem('user')) // Kullanıcı bilgilerini alın
       if (!user) {
-        console.error('Kullanıcı bilgileri mevcut değil')
-        return "Giriş yapın";
+        alert('Yorum yapmak için giriş yapmalısınız!')
+        return history.push("/login");
       }
       const reviewData = {
         userId: user._id,

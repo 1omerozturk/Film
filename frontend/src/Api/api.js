@@ -45,12 +45,17 @@ const API_URL2 = 'http://localhost:5000/api';
 // Yorumları Getir
 export const getMovieReviews = async (movieId) => {
   try {
-    const token = localStorage.getItem('token'); // Token'ı ayrı bir değişkene alın
-    const response = await axios.get(`${API_URL2}/movies/${movieId}/reviews`, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
-      },
-    });
+    const response = await axios.get(`${API_URL2}/movies/${movieId}/reviews`
+      
+      // Yorumlar herkes tarafından görülebilir olduğu  için tokene gerek yok 
+      // const token = localStorage.getItem('token'); // Token'ı ayrı bir değişkene alın
+      // , {
+      // headers: {
+      //   Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
+      // },
+    // }
+  
+  );
     if(response.data.length>0)return response.data;
     else return "Yorum yok";
   } catch (error) {

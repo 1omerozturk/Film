@@ -2,18 +2,19 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { registerUser } from '../../Api/api'
 import 'react-toastify/dist/ReactToastify.css'
+import showToast from '../Alert/ShowToast'
 
 const Register = () => {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const history = useHistory()
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       await registerUser({ username, email, password })
       history.push('/login')
+      showToast("Kayıt işlemi başarılı. Giriş yapabilirsiniz.","success")
     } catch (error) {
       console.error('Registration failed:', error)
     }

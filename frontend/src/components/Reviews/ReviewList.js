@@ -35,6 +35,7 @@ const [editingReview,setEditingReview]=useState([])
         }
         if (userName) {
           const user = JSON.parse(userName)
+          console.log(user.role)
           setUser(user)
         }
       } catch (err) {
@@ -74,23 +75,28 @@ const [editingReview,setEditingReview]=useState([])
                   {review.comment}
                 </p>
                
-                {review.user.username === user.username ? (
                   <div className="btn-gruop mt-2">
+                {review.user.username === user.username ? (
                     <button 
                     onClick={()=>{handleEditClick(review)}}
                     className="btn btn-outline-dark mb-2 mx-2">
                       Düzenle
                     </button>
+                    ) : (
+                      ''
+                    )}
+                    {user.role==='admin'||review.user.username === user.username ?(
+
                     <button
                       onClick={() => {deleteReview(movieId,review._id)}}
                       className="btn btn-outline-danger mb-2"
                     >
                       Sil
                     </button>
+                    ):('')
+                    }
                   </div>
-                ) : (
-                  ''
-                )}
+                
               </div>
             ))
           ) : (

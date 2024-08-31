@@ -75,7 +75,7 @@ exports.getMovieReviews = async (req, res) => {
             path:'reviews',
             populate:{
                 path:'user',
-                select:'username',
+                select:'username role',
             }
         }
         )

@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { loginUser } from '../../Api/api'
 import 'react-toastify/dist/ReactToastify.css'
 import { Link, NavLink } from 'react-router-dom/cjs/react-router-dom.min'
+import showToast from '../Alert/ShowToast'
 
 const LoginPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -11,7 +12,6 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({})
   const history = useHistory()
 
-  
 
   const validateForm = () => {
     const errors = {}
@@ -47,15 +47,27 @@ const LoginPage = () => {
       const user=localStorage.setItem('user', JSON.stringify(response.data.user))
       setIsAuthenticated(!!user && !!token);
       const admin=localStorage.getItem( 'user')
+      const loggedUser=JSON.parse(admin)
       const role=JSON.parse(admin)
+      
       if(role.role==="admin"){
-        history.push('/admin')
+        showToast(`Hoşgeldiniz, ${loggedUser.username} ${loggedUser.role}`,"info")
+        setTimeout(()=>{
+          history.push('/admin')
+          window.location.reload();
+        },2000)
       }
       else{
-        history.push('/')
+        showToast(`Hoşgeldiniz, ${loggedUser.username} ${loggedUser.role}`
+          ,"info")
+        setTimeout(()=>{
+          history.push('/')
+          window.location.reload();
+        },2000)
       }
-
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.error('Login failed:', error)
       setErrors({ api: 'Login failed. Please try again.' })
     }
