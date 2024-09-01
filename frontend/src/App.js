@@ -15,6 +15,7 @@ import BgImage from './images/bg.jpeg'
 import { Switch } from 'react-router-dom/cjs/react-router-dom';
 
 const App = () => {
+  const [searchTerm,setSearchTerm]=useState('');
   return (
     <Router>
       <div
@@ -23,19 +24,23 @@ const App = () => {
         backgroundImage: `url(${BgImage})`,
         height: '100vh',
         backgroundSize: 'cover', // Resmin tüm ekrana sığması için cover kullanılır
-        backgroundRepeat:'repeat-y',
         backgroundPosition: 'center', // Resmi ortalamak için
       }}
     >
 
-      <Navbar />
       <ToastContainer />
+      <Navbar setSearchTerm={setSearchTerm} />
       <Switch>
-        <Route exact path="/"  component={Home} />
+      <Route 
+            exact 
+            path="/" 
+            render={(props) => <Home {...props} searchTerm={searchTerm} />} 
+          />
         <Route path="/movie/:id" component={MoviePage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/register" component={Register} />
-        <PrivateRoute path="/admin" component={AdminPage} />
+        <PrivateRoute path="/admin" component={AdminPage} searchTerm={searchTerm}
+        />
         <Route component={NotFound} />
       </Switch>
       </div>

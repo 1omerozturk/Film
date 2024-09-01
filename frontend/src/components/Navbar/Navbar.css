@@ -1,0 +1,57 @@
+/* Navbar.css */
+.bm-burger-button {
+    position: fixed;
+    width:36px;
+    height: 30px;
+    left: 36px;
+    top: 10px;
+  }
+  
+  .bm-burger-bars {
+    background: #5a6493;
+  }
+  
+  .bm-burger-bars-hover {
+    background: #349df9;
+  }
+  
+  .bm-cross-button {
+    height: 34px;
+    width: 34px;
+  }
+  
+  .bm-cross {
+    background: #070707;
+  }
+  .bm-cross-hover {
+    background: #ff0000;
+    color:#ff0000;
+  }
+  
+  .bm-menu  {
+    background: #373a47;
+    padding: 2.5em 0em 0;
+    font-size: 1.15em;
+  }
+ 
+  .bm-morph-shape {
+    fill: #373a47;
+  }
+  .bm-morph-shape:hover {
+    color: #ff0000;
+    fill: #ff0000;
+  }
+  
+  .bm-item-list {
+    color: #b8b7ad;
+  }
+  
+  .bm-item  {
+    display: inline-block;
+    padding-block-end: 1em;
+  }
+  
+  .bm-overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  

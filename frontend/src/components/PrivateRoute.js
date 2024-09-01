@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Redirect, Link } from 'react-router-dom';
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
+const PrivateRoute = ({ component: Component, searchTerm, ...rest }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -10,7 +10,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={(props) =>
         token && user && user.role === 'admin' ? (
-          <Component {...props} />
+          <Component {...props} searchTerm={searchTerm} />
         ) : (
           <Link to="/login" />
         )

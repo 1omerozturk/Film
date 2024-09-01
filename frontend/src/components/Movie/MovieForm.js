@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { addMovie, updateMovie } from '../../Api/api'
+import { CiCircleRemove } from 'react-icons/ci';
 
 const MovieForm = ({ movie, onFormSubmit }) => {
 
@@ -32,22 +33,26 @@ const MovieForm = ({ movie, onFormSubmit }) => {
     }
   }, [movie]);
 
+  const handleGenreClear=()=>{
+    setGenre('')
+  }
+
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
 
-
-  const handleGenreChange=(event)=>{
+  const handleGenreChange = (event) => {
     const selectedOption = event.target.value;
-
+  
     // Eğer seçiliyse çıkar, değilse ekle
-  if (genre.includes(selectedOption)) {  
-      setGenre(genre.filter((g) => g !== selectedOption));
-    } else {
+
+      if (genre.includes(selectedOption)) {
+        // Eğer sadece bir öğe seçiliyse ve bu öğe tekrar seçilirse, bu öğeyi de çıkar
+        setGenre(genre.filter((g) => g !== selectedOption));
+      } else {
         setGenre([...genre, selectedOption]);
       }
-
-  }
+  };
 
 
   const handleSubmit = async (e) => {
@@ -82,7 +87,7 @@ const MovieForm = ({ movie, onFormSubmit }) => {
   };
 
   return (
-    <div className="mt-2 w-full mx-auto bg-gradient-to-t to-sky-300 via-gray-400 from-transparent shadow-md rounded-lg p-6">
+    <div className="mt-16 h-fit w-full mx-auto bg-gradient-to-t to-sky-300 via-gray-400 from-transparent shadow-md rounded-lg p-6">
   <form onSubmit={handleSubmit}>
     <h3 className=" text-4xl  text-center font-semibold mb-4">{movie ? 'Film Güncelle' : 'Film Ekle'}</h3>
     <div className="mb-4">
@@ -106,14 +111,21 @@ const MovieForm = ({ movie, onFormSubmit }) => {
       />
     </div>
     <div className="mb-4 rounded-lg">
+      <div className='items-center justify-between grid grid-flow-col'>
+
     <input
       type="text"
       placeholder='Tür'
       value={genre.length>0?genre.join(', '):""}
       readOnly
       className="w-full px-4 py-2 border font-semibold border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-  
+      />
+  <button>
+    <CiCircleRemove
+    onClick={handleGenreClear}
+    size={25}/>
+  </button>
+      </div>
      <select
     value={genre}
     onChange={(e) => handleGenreChange(e)}
@@ -156,7 +168,7 @@ const MovieForm = ({ movie, onFormSubmit }) => {
         value={plot}
         onChange={(e) => setPlot(e.target.value)}
         required
-        className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="resize-none overflow-auto w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
       ></textarea>
     </div>
     <div className="mb-4">

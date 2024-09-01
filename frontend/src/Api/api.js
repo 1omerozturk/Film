@@ -66,6 +66,14 @@ export const getMovieReviews = async (movieId) => {
   }
 };
 
+
+export const getGenreByCode = async (code) => {
+  
+      const response = await axios.get(`${API_URL2}/genre/${code}`);
+      return response.data;
+};
+
+
 export const deleteMovieReview=async(movieId,reviewId)=>{
   try {
     const token=localStorage.getItem('token');

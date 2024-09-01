@@ -1,10 +1,10 @@
 import React from 'react';
 import AdminPanel from '../components/Admin/AdminPanel';
 
-const AdminPage = () => {
+const AdminPage = ({searchTerm}) => {
   return (
     <div className="admin-page">
-      <AdminPanel />
+      <AdminPanel searchTerm={searchTerm}  />
     </div>
   );
 };

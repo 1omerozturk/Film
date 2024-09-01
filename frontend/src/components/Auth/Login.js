@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { loginUser } from '../../Api/api'
 import 'react-toastify/dist/ReactToastify.css'
@@ -6,12 +6,11 @@ import { Link, NavLink } from 'react-router-dom/cjs/react-router-dom.min'
 import showToast from '../Alert/ShowToast'
 
 const LoginPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({})
   const history = useHistory()
-
 
   const validateForm = () => {
     const errors = {}
@@ -32,7 +31,6 @@ const LoginPage = () => {
     setErrors(errors)
   }
 
-
   const handleLogin = async (e) => {
     e.preventDefault()
     validateForm() // Formu tekrar doğrula
@@ -43,31 +41,36 @@ const LoginPage = () => {
 
     try {
       const response = await loginUser({ email, password })
-      const token=localStorage.setItem('token', response.data.token)
-      const user=localStorage.setItem('user', JSON.stringify(response.data.user))
-      setIsAuthenticated(!!user && !!token);
-      const admin=localStorage.getItem( 'user')
-      const loggedUser=JSON.parse(admin)
-      const role=JSON.parse(admin)
-      
-      if(role.role==="admin"){
-        showToast(`Hoşgeldiniz, ${loggedUser.username} ${loggedUser.role}`,"info")
-        setTimeout(()=>{
+      const token = localStorage.setItem('token', response.data.token)
+      const user = localStorage.setItem(
+        'user',
+        JSON.stringify(response.data.user),
+      )
+      setIsAuthenticated(!!user && !!token)
+      const admin = localStorage.getItem('user')
+      const loggedUser = JSON.parse(admin)
+      const role = JSON.parse(admin)
+
+      if (role.role === 'admin') {
+        showToast(
+          `Hoşgeldiniz, ${loggedUser.username} ${loggedUser.role}`,
+          'info',
+        )
+        setTimeout(() => {
           history.push('/admin')
-          window.location.reload();
-        },2000)
-      }
-      else{
-        showToast(`Hoşgeldiniz, ${loggedUser.username} ${loggedUser.role}`
-          ,"info")
-        setTimeout(()=>{
+          window.location.reload()
+        }, 2000)
+      } else {
+        showToast(
+          `Hoşgeldiniz, ${loggedUser.username} ${loggedUser.role}`,
+          'info',
+        )
+        setTimeout(() => {
           history.push('/')
-          window.location.reload();
-        },2000)
+          window.location.reload()
+        }, 2000)
       }
-    } 
-    
-    catch (error) {
+    } catch (error) {
       console.error('Login failed:', error)
       setErrors({ api: 'Login failed. Please try again.' })
     }
@@ -91,7 +94,7 @@ const LoginPage = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            required
+              required
               className="w-full col-span-5 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -102,20 +105,18 @@ const LoginPage = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            required
+              required
               className="w-full col-span-5 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-           
           </div>
-          <div className='text-center'>
-
-          <button
-            type="submit"
-            className="w-1/2 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
+          <div className="text-center">
+            <button
+              type="submit"
+              className="w-1/2 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
             >
-            Login
-          </button>
-              </div>
+              Login
+            </button>
+          </div>
         </form>
       </div>
     </div>
