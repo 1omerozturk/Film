@@ -9,44 +9,36 @@ import { fetchMovieById, getMovieReviews } from '../../Api/api'
 const MovieDetail = () => {
   const { id } = useParams()
   const [movie, setMovie] = useState(null)
-  const [reviewsUpdated, setReviewsUpdated] = useState(false);
+  const [editingReview, setEditingReview] = useState(null)
+  const [reviewsUpdated, setReviewsUpdated] = useState(false)
   const [reviews, setReviews] = useState([])
 
   useEffect(() => {
     const fetchReviews = async () => {
-      try {
-          const response = await fetchMovieById(id)
-          setMovie(response.data)
-        const reviewsData = await getMovieReviews(id)
-        setReviews(reviewsData);
-        
-      } catch (err) {
-        console.error('Yorumları getirme hatası', err)
-      }
+      const response = await fetchMovieById(id)
+      setMovie(response.data)
+      const reviewsData = await getMovieReviews(id)
+      setReviews(reviewsData)
     }
     fetchReviews()
-  }, [id])
-  
+  }, [id, reviewsUpdated])
+
   useEffect(() => {
     const loadMovie = async () => {
       const response = await fetchMovieById(id)
       setMovie(response.data)
-    
     }
     loadMovie()
   }, [id])
-  
-  const handleReviewAdded = () => {
-    setReviewsUpdated(prev => !prev); // Değer ters çevrilir, böylece `useEffect` tetiklenir
-  };
 
-  
+  const handleReviewAdded = () => {
+    setReviewsUpdated((prev) => !prev) // Değer ters çevrilir, böylece `useEffect` tetiklenir
+  }
+
   if (!movie) return <div>Loading...</div>
 
   return (
-    <div
-      className="movie-detail text-center"
-    >
+    <div className="movie-detail text-center">
       <h2 className="select-none rounded-full mx-auto px-4 py-1 w-fit bg-gradient-to-l from-orange-800 to-black font-extrabold underline text-slate-100">
         {movie.title}
       </h2>
@@ -70,8 +62,16 @@ const MovieDetail = () => {
         <strong className=" text-teal-500">Release Date:</strong>{' '}
         {movie.release_date}
       </p>
-      <ReviewForm movieId={movie._id} onReviewAdded={handleReviewAdded} />
-      <ReviewList  movieId={movie._id} onReviewAdded={handleReviewAdded} />
+      <ReviewForm
+        movieId={movie._id}
+        review={editingReview}
+        onReviewAdded={handleReviewAdded}
+      />
+      <ReviewList
+        setEditingReview={setEditingReview}
+        movieId={movie._id}
+        onReviewAdded={handleReviewAdded}
+      />
     </div>
   )
 }

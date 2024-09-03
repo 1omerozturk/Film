@@ -2,10 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchMovies, getGenreByCode } from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
-const MovieList = ({ searchTerm }) => {
+const MovieList = ({ searchTerm, filter, filterDate }) => {
   const [movies, setMovies] = useState([])
   const [filteredMovies, setFilteredMovies] = useState([])
-  const [genreNames, setGenreNames] = useState([])
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -23,9 +22,31 @@ const MovieList = ({ searchTerm }) => {
       )
       setFilteredMovies(filtered)
     } else {
-      setFilteredMovies(movies)
+      if (filter !== '' && filter !== 'Tür Seçiniz' && filterDate !== '') {
+        const filtered = movies.filter(
+          (movie) =>
+            movie.genre.some((e) =>
+              e?.toLowerCase().includes(filter?.toLowerCase()),
+            ) && movie.release_date == filterDate,
+        )
+        setFilteredMovies(filtered)
+      } else if (filter !== '' && filter !== 'Tür Seçiniz') {
+        const filtered = movies.filter((movie) =>
+          movie.genre.some((e) =>
+            e?.toLowerCase().includes(filter?.toLowerCase()),
+          ),
+        )
+        setFilteredMovies(filtered)
+      } else if (filterDate !== '') {
+        const filtered = movies.filter(
+          (movie) => movie.release_date == filterDate,
+        )
+        setFilteredMovies(filtered)
+      } else {
+        setFilteredMovies(movies)
+      }
     }
-  }, [searchTerm, movies])
+  }, [searchTerm, movies, filter, filterDate])
 
   return (
     <div className="movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-5">
@@ -33,7 +54,7 @@ const MovieList = ({ searchTerm }) => {
         ? filteredMovies.map((movie) => (
             <div
               key={movie._id}
-              className="movie-item hover:drop-shadow-xl hover:shadow-black relative"
+              className="movie-item hover:shadow-lg hover:transition-shadow delay-200 hover:shadow-black relative"
             >
               <div
                 title={movie.release_date}
@@ -60,7 +81,10 @@ const MovieList = ({ searchTerm }) => {
               ) : (
                 ''
               )}
-              <Link to={`/movie/${movie._id}`}>
+              <Link
+                style={{ textDecoration: 'none' }}
+                to={`/movie/${movie._id}`}
+              >
                 <img
                   className="h-[500px] rounded-lg shadow-sm shadow-blue-800 w-full"
                   src={movie.poster_url}
@@ -97,7 +121,10 @@ const MovieList = ({ searchTerm }) => {
               key={movie._id}
               className="movie-item hover:drop-shadow-xl hover:shadow-black"
             >
-              <Link to={`/movie/${movie._id}`}>
+              <Link
+                style={{ textDecoration: 'none' }}
+                to={`/movie/${movie._id}`}
+              >
                 <img
                   className="h-[500px] rounded-lg shadow-sm shadow-blue-800 w-full"
                   src={movie.poster_url}

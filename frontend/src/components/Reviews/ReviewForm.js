@@ -3,11 +3,18 @@ import { createReview, fetchMovies, getMovieReviews, updateReview } from '../../
 import ReactStars from 'react-rating-stars-component'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 
-const ReviewForm = ({ movieId,onReviewAdded }) => {
+const ReviewForm = ({ movieId,onReviewAdded,review }) => {
   const [rating, setRating] = useState(1)
   const [comment, setComment] = useState('')
   const [reviews, setReviews] = useState([])
  const history=useHistory();
+
+useEffect(()=>{
+  if(review){
+  setComment(review.comment);
+  setRating(review.rating);
+  }
+},[review]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,12 +29,18 @@ const ReviewForm = ({ movieId,onReviewAdded }) => {
         rating,
         comment,
       }
-      await createReview(movieId, reviewData)
+      if(review){
+        await updateReview(review._id,reviewData);
+      }
+      else{
+
+        await createReview(movieId, reviewData)
+      }
       const response=await getMovieReviews(movieId)
       setReviews(response)
+      onReviewAdded();
       setRating(1)
       setComment('')
-      onReviewAdded();
     } catch (error) {
       console.error(error)
     }
@@ -65,7 +78,7 @@ const ReviewForm = ({ movieId,onReviewAdded }) => {
       
       <button
       className="text-slate-800 hover:bg-sky-600 border-solid border-2 border-sky-500 p-1 hover:shadow-sm hover:drop-shadow-xl rounded-xl bg-sky-400 hover:text-white w-fit mx-auto my-2 font-semibold" type="submit">
-        Yorum Ekle
+        {review?'Güncelle':'Yorum Ekle'}
       </button>
     </form>
   )

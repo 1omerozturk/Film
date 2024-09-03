@@ -87,7 +87,7 @@ const MovieForm = ({ movie, onFormSubmit }) => {
   };
 
   return (
-    <div className="mt-16 h-fit w-full mx-auto bg-gradient-to-t to-sky-300 via-gray-400 from-transparent shadow-md rounded-lg p-6">
+    <div className="mt-16 h-fit  bg-gradient-to-t to-sky-300 via-gray-400 from-transparent shadow-md rounded-lg p-6">
   <form onSubmit={handleSubmit}>
     <h3 className=" text-4xl  text-center font-semibold mb-4">{movie ? 'Film Güncelle' : 'Film Ekle'}</h3>
     <div className="mb-4">
@@ -132,6 +132,9 @@ const MovieForm = ({ movie, onFormSubmit }) => {
     className="form-multiselect block w-full mt-1 bg-slate-800 text-white"
     size={1}
     >
+      <option  value="" disabled hidden>
+    Tür
+  </option>
     {allGenres.map((genreItem) => (
       <option key={genreItem} value={genreItem}>
         {genreItem}
@@ -207,7 +210,7 @@ const MovieForm = ({ movie, onFormSubmit }) => {
       type="submit"
       className="w-full bg-sky-600 text-white py-2 px-4 rounded-none hover:bg-sky-700 transition duration-300"
     >
-      {movie ? 'Update Movie' : 'Add Movie'}
+      {movie ? 'Güncelle' : 'Film Ekle'}
     </button>
   </form>
 </div>

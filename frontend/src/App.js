@@ -1,51 +1,59 @@
-import React,{useState,useEffect} from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import { ToastContainer } from 'react-toastify';
-import 'primeicons/primeicons.css';
-import MoviePage from './pages/MoviePage';
-import AdminPage from './pages/AdminPage';
-import LoginPage from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import NotFound from './pages/NotFound';
-import Navbar from './components/Navbar/Navbar';
-import PrivateRoute from './components/PrivateRoute';
+import React, { useState, useEffect, lazy, Suspense } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import { ToastContainer } from 'react-toastify'
+import 'primeicons/primeicons.css'
+import MoviePage from './pages/MoviePage'
+import AdminPage from './pages/AdminPage'
+import LoginPage from './components/Auth/Login'
+import Register from './components/Auth/Register'
+import NotFound from './pages/NotFound'
+import Navbar from './components/Navbar/Navbar'
+import PrivateRoute from './components/PrivateRoute'
 import BgImage from './images/bg.jpeg'
-import { Switch } from 'react-router-dom/cjs/react-router-dom';
+import { Switch } from 'react-router-dom/cjs/react-router-dom'
+
 
 const App = () => {
-  const [searchTerm,setSearchTerm]=useState('');
+  const [searchTerm, setSearchTerm] = useState('')
+
   return (
     <Router>
       <div
-      className='h-full'
-      style={{
-        backgroundImage: `url(${BgImage})`,
-        height: '100vh',
-        backgroundSize: 'cover', // Resmin tüm ekrana sığması için cover kullanılır
-        backgroundPosition: 'center', // Resmi ortalamak için
-      }}
-    >
+        className="h-full"
+        style={{
+          backgroundImage: `url(${BgImage})`,
+          height: '100vh',
+          backgroundSize: 'cover', // Resmin tüm ekrana sığması için cover kullanılır
+          backgroundPosition: 'center', // Resmi ortalamak için
+        }}
+      >
+        <ToastContainer />
+        <div className="sticky z-10">
+          <Navbar className="bg-transparent" setSearchTerm={setSearchTerm} />
+        </div>
 
-      <ToastContainer />
-      <Navbar setSearchTerm={setSearchTerm} />
-      <Switch>
-      <Route 
-            exact 
-            path="/" 
-            render={(props) => <Home {...props} searchTerm={searchTerm} />} 
+
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={(props) => <Home {...props} searchTerm={searchTerm} />}
           />
-        <Route path="/movie/:id" component={MoviePage} />
-        <Route path="/login" component={LoginPage} />
-        <Route path="/register" component={Register} />
-        <PrivateRoute path="/admin" component={AdminPage} searchTerm={searchTerm}
-        />
-        <Route component={NotFound} />
-      </Switch>
+          <Route path="/movie/:id" component={MoviePage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/register" component={Register} />
+          <PrivateRoute
+            path="/admin"
+            component={AdminPage}
+            searchTerm={searchTerm}
+          />
+          <Route component={NotFound} />
+        </Switch>
       </div>
     </Router>
-  );
-};
+  )
+}
 
-export default App;
+export default App
