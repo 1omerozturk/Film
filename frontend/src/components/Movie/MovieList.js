@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Bg from '../../images/bg.jpeg'
-import { fetchMovies, getGenreByCode } from '../../Api/api'
+import { fetchMovies} from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
 const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
   const [movies, setMovies] = useState([])
@@ -27,7 +27,7 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
         (movie) =>
           movie.genre.some((e) =>
             e?.toLowerCase().includes(filter?.toLowerCase()),
-          ) && movie.release_date == filterDate,
+          ) && movie.release_date === filterDate,
       )
       setFilteredMovies(filtered)
     } else if (filter !== '' && filter !== 'Tür') {
@@ -39,11 +39,11 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
       setFilteredMovies(filtered)
     } else if (filterDate !== '') {
       const filtered = movies.filter(
-        (movie) => movie.release_date == filterDate,
+        (movie) => movie.release_date === filterDate,
       )
       setFilteredMovies(filtered)
     }
-    if (sortBy !== '') {
+    else if (sortBy !== '') {
       let sortedMovies = [...movies]
       switch (sortBy) {
         case 'popularityAsc':
@@ -81,6 +81,7 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
     >
       {filteredMovies
         ? filteredMovies.map((movie) => (
+          
             <div
               title={movie.title.length}
               key={movie._id}

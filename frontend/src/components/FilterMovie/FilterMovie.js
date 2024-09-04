@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -51,6 +51,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
 
   const handleInputChange = (event) => {
     setFilter(event.target.value)
+    console.log(event.target.value)
     setSelectedGenre(event.target.value)
     if (event.target.value !== '' || event.target.value !== 'Tür Seçiniz') {
       setIsEmpty(false)
@@ -58,6 +59,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
   }
   const handleInputDateChange = (event) => {
     setFilterDate(event.target.value)
+    console.log(event.target.value)
     setSelectedYear(event.target.value)
     if (event.target.value !== '') {
       setIsEmpty(false)
@@ -66,6 +68,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
 
   const handleSortChange = (e) => {
     setSortBy(e.target.value)
+    console.log(e.target.value)
     if(e.target.value!==''){
       setIsEmpty(false)
     }
@@ -124,7 +127,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
             onChange={handleInputDateChange}
             className="form-select block text-center w-fit font-bold border custom-scrollbar  bg-indigo-500 border-black rounded-xl px-6 bg-transparent text-black"
           >
-            <option value="" disabled hidden>
+            <option className='font-semibold bg-indigo-500' value="">
               Yıl
             </option>
             {Array.from(
@@ -160,7 +163,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
             placeholder="Tür"
             onChange={handleInputChange}
           >
-            <option value="" disabled hidden>
+            <option value="" >
               Tür
             </option>
             {allGenres.map((genreItem) => (

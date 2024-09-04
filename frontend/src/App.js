@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react'
+import React, { useState} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Home from './pages/Home'
@@ -13,6 +13,7 @@ import Navbar from './components/Navbar/Navbar'
 import PrivateRoute from './components/PrivateRoute'
 import BgImage from './images/bg.jpeg'
 import { Switch } from 'react-router-dom/cjs/react-router-dom'
+import MovieSearch from './components/Movie/MovieSearch'
 
 
 const App = () => {
@@ -43,6 +44,9 @@ const App = () => {
             render={(props) => <Home {...props} searchTerm={searchTerm} />}
           />
           <Route path="/movie/:id" component={MoviePage} />
+import Search from './components/Movie/MovieSearch'
+          <Route path="/search" component={MovieSearch} />
+
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={Register} />
           <PrivateRoute

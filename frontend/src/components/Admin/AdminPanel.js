@@ -5,7 +5,6 @@ import { deleteMovieById, fetchMovies } from '../../Api/api'
 import MovieForm from '../Movie/MovieForm'
 import BgImage from '../../images/bg.jpeg'
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
-import showToast from '../Alert/ShowToast'
 
 const AdminPanel = ({ searchTerm }) => {
   const [movies, setMovies] = useState([])

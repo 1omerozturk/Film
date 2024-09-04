@@ -1,5 +1,6 @@
 const express = require('express')
 const auth=require('../middleware/auth')
+const isAdmin = require('../middleware/admin')
 const {
   createMovie,
   updateMovie,
@@ -7,7 +8,6 @@ const {
   getMovieById,
   deleteMovie,
 } = require('../controllers/movieController')
-const isAdmin = require('../middleware/admin')
 
 const router = express.Router()
 
