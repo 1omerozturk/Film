@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Bg from '../../images/bg.jpeg'
 import { fetchMovies, getGenreByCode } from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
-const MovieList = ({ searchTerm, filter, filterDate }) => {
+const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
   const [movies, setMovies] = useState([])
   const [filteredMovies, setFilteredMovies] = useState([])
 
@@ -21,38 +22,67 @@ const MovieList = ({ searchTerm, filter, filterDate }) => {
         movie.title.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredMovies(filtered)
-    } else {
-      if (filter !== '' && filter !== 'Tür Seçiniz' && filterDate !== '') {
-        const filtered = movies.filter(
-          (movie) =>
-            movie.genre.some((e) =>
-              e?.toLowerCase().includes(filter?.toLowerCase()),
-            ) && movie.release_date == filterDate,
-        )
-        setFilteredMovies(filtered)
-      } else if (filter !== '' && filter !== 'Tür Seçiniz') {
-        const filtered = movies.filter((movie) =>
+    } else if (filter !== '' && filter !== 'Tür' && filterDate !== '') {
+      const filtered = movies.filter(
+        (movie) =>
           movie.genre.some((e) =>
             e?.toLowerCase().includes(filter?.toLowerCase()),
-          ),
-        )
-        setFilteredMovies(filtered)
-      } else if (filterDate !== '') {
-        const filtered = movies.filter(
-          (movie) => movie.release_date == filterDate,
-        )
-        setFilteredMovies(filtered)
-      } else {
-        setFilteredMovies(movies)
-      }
+          ) && movie.release_date == filterDate,
+      )
+      setFilteredMovies(filtered)
+    } else if (filter !== '' && filter !== 'Tür') {
+      const filtered = movies.filter((movie) =>
+        movie.genre.some((e) =>
+          e?.toLowerCase().includes(filter?.toLowerCase()),
+        ),
+      )
+      setFilteredMovies(filtered)
+    } else if (filterDate !== '') {
+      const filtered = movies.filter(
+        (movie) => movie.release_date == filterDate,
+      )
+      setFilteredMovies(filtered)
     }
-  }, [searchTerm, movies, filter, filterDate])
+    if (sortBy !== '') {
+      let sortedMovies = [...movies]
+      switch (sortBy) {
+        case 'popularityAsc':
+          sortedMovies.sort((a, b) => a.rating - b.rating)
+          break
+        case 'popularityDesc':
+          sortedMovies.sort((a, b) => b.rating - a.rating)
+          break
+        case 'nameAsc':
+          sortedMovies.sort((a, b) => a.title.localeCompare(b.title))
+          break
+
+        case 'nameDesc':
+          sortedMovies.sort((a, b) => b.title.localeCompare(a.title))
+          break
+        case 'dateAsc':
+          sortedMovies.sort((a, b) => a.release_date - b.release_date)
+          break
+        case 'dateDesc':
+          sortedMovies.sort((a, b) => b.release_date - a.release_date)
+          break
+        default:
+          break
+      }
+      setFilteredMovies(sortedMovies)
+    } else {
+      setFilteredMovies(movies)
+    }
+  }, [searchTerm, movies, filter, sortBy, filterDate])
 
   return (
-    <div className="movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-5">
+    <div
+      style={{ background: { Bg } }}
+      className="mx-5 movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-16"
+    >
       {filteredMovies
         ? filteredMovies.map((movie) => (
             <div
+              title={movie.title.length}
               key={movie._id}
               className="movie-item hover:shadow-lg hover:transition-shadow delay-200 hover:shadow-black relative"
             >
@@ -131,7 +161,8 @@ const MovieList = ({ searchTerm, filter, filterDate }) => {
                   alt={movie.title}
                 />
                 <h3 className="mt-1 rounded-2xl p-2 text-center bg-gradient-to-l to-blue-400 from-slate-900 text-white ">
-                  {movie.title}
+                {(movie.title).length > 20 ? `${(movie.title).substring(0, 20)}...` : movie.title}
+                  
                 </h3>
               </Link>
             </div>

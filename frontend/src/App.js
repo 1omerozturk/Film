@@ -25,6 +25,7 @@ const App = () => {
         style={{
           backgroundImage: `url(${BgImage})`,
           height: '100vh',
+          backgroundRepeat:'repeat-y',
           backgroundSize: 'cover', // Resmin tüm ekrana sığması için cover kullanılır
           backgroundPosition: 'center', // Resmi ortalamak için
         }}

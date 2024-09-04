@@ -1,35 +1,72 @@
 import React, { useEffect, useState } from 'react'
 
-const FilterMovie = ({ setFilter, setFilterDate }) => {
+const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isEmpty, setIsEmpty] = useState(true)
   const [selectedYear, setSelectedYear] = useState('')
   const [selectedGenre, setSelectedGenre] = useState('')
+
+  const options = [
+    {
+      label: 'Ad Azalan',
+      value: 'nameDesc',
+    },
+    {
+      label: 'Ad Artan',
+      value: 'nameAsc',
+    },
+    {
+      label: 'Pop Azalan',
+      value: 'popularityDesc',
+    },
+    {
+      label: 'Pop Artan',
+      value: 'popularityAsc',
+    },
+    {
+      label: 'Tarih Azalan',
+      value: 'dateDesc',
+    },
+    {
+      label: 'Tarih Artan',
+      value: 'dateAsc',
+    },
+  ]
 
   const clearInputs = () => {
     setSelectedYear('')
     setSelectedGenre('')
     setFilter('')
     setFilterDate('')
+    setSortBy('');
     setIsEmpty(true)
   }
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
+    if (isOpen) {
+      clearInputs()
+    }
   }
 
   const handleInputChange = (event) => {
     setFilter(event.target.value)
     setSelectedGenre(event.target.value)
-    if (event.target.value != '' || event.target.value !== 'Tür Seçiniz') {
+    if (event.target.value !== '' || event.target.value !== 'Tür Seçiniz') {
+      setIsEmpty(false)
+    }
+  }
+  const handleInputDateChange = (event) => {
+    setFilterDate(event.target.value)
+    setSelectedYear(event.target.value)
+    if (event.target.value !== '') {
       setIsEmpty(false)
     }
   }
 
-  const handleInputDateChange = (event) => {
-    setFilterDate(event.target.value)
-    setSelectedYear(event.target.value)
-    if (event.target.value != '') {
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value)
+    if(e.target.value!==''){
       setIsEmpty(false)
     }
   }
@@ -72,15 +109,6 @@ const FilterMovie = ({ setFilter, setFilterDate }) => {
         } transition-transform duration-300`}
       >
         <div className="grid grid-flow-col rounded-lg p-2 w-fit h-fit bg-indigo-500 gap-3 py-1 absolute top-8 right-12">
-          {/* <input
-            value={selectedYear}
-            min={1950}
-            max={2024}
-            onChange={handleInputDateChange}
-            className="w-fit font-bold text-black bg-transparent border-2 border-black mx-auto rounded-xl px-3 text-center placeholder:text-white"
-            type="number"
-            placeholder="Yıl"
-          /> */}
           <style jsx>{`
             .custom-scrollbar::-webkit-scrollbar {
               width: 12px;
@@ -94,7 +122,7 @@ const FilterMovie = ({ setFilter, setFilterDate }) => {
           <select
             value={selectedYear}
             onChange={handleInputDateChange}
-            className="form-select block  w-fit font-bold border custom-scrollbar  bg-indigo-500 border-black rounded-xl px-6 bg-transparent text-black"
+            className="form-select block text-center w-fit font-bold border custom-scrollbar  bg-indigo-500 border-black rounded-xl px-6 bg-transparent text-black"
           >
             <option value="" disabled hidden>
               Yıl
@@ -120,14 +148,14 @@ const FilterMovie = ({ setFilter, setFilterDate }) => {
               max={2024}
               value={selectedYear}
               onChange={handleInputDateChange}
-              className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer"
             />
             <span className="ml-4 font-semibold">{selectedYear}</span>
           </div>
 
           <select
             value={selectedGenre}
-            className="form-multiselect block w-fit mt-1 font-semibold border custom-scrollbar border-black rounded-lg px-1 bg-indigo-500 text-black"
+            className="form-multiselect text-center block w-fit mt-1 font-semibold border custom-scrollbar border-black rounded-lg px-1 bg-indigo-500 text-black"
             size={1}
             placeholder="Tür"
             onChange={handleInputChange}
@@ -143,6 +171,22 @@ const FilterMovie = ({ setFilter, setFilterDate }) => {
                 value={genreItem}
               >
                 {genreItem}
+              </option>
+            ))}
+          </select>
+          <select
+            onChange={handleSortChange}
+            name={'Sırala'}
+            defaultValue=""
+            className="bg-indigo-500 text-center font-semibold custom-scrollbar border rounded-lg border-black "
+          >
+            <option className='font-semibold' value="">
+              Sırala
+            </option>
+
+            {options.map((option, index) => (
+              <option className='font-semibold' key={index} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
