@@ -8,7 +8,7 @@ const [filterDate,setFilterDate]=useState('');
 const [sortBy,setSortBy]=useState('')
 
   return (
-    <div className="py-1">
+    <div className="py-1 h-full min-h-screen">
        
        <FilterMovie setFilterDate={setFilterDate} setSortBy={setSortBy} setFilter={setFilter}  />
       <MovieList filter={filter} sortBy={sortBy} filterDate={filterDate} searchTerm={searchTerm} />

@@ -51,7 +51,6 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
 
   const handleInputChange = (event) => {
     setFilter(event.target.value)
-    console.log(event.target.value)
     setSelectedGenre(event.target.value)
     if (event.target.value !== '' || event.target.value !== 'Tür Seçiniz') {
       setIsEmpty(false)
@@ -59,9 +58,8 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
   }
   const handleInputDateChange = (event) => {
     setFilterDate(event.target.value)
-    console.log(event.target.value)
     setSelectedYear(event.target.value)
-    if (event.target.value !== '') {
+    if (event.target.value !== ''|| event.target.value!=='Yıl') {
       setIsEmpty(false)
     }
   }
@@ -98,7 +96,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
   ]
 
   return (
-    <div className="pt-0">
+    <div className={`pt-0 bg-transparent ${!isOpen?'animate-pulse':''}`}>
       <button
         title="Filtreleme"
         onClick={toggleSidebar}
@@ -118,7 +116,7 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
             }
 
             .custom-scrollbar::-webkit-scrollbar-thumb {
-              background-color: #4f46e5; /* Indigo-600 rengi */
+              background-color: #4f46e5;
               border-radius: 9999px;
             }
           `}</style>
@@ -196,10 +194,10 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
           <button
             className={`${
               isEmpty ? 'collapse' : ''
-            } border border-black rounded-full px-2 hover:ring-2`}
+            } border border-white hover:bg-black hover:text-white rounded-full px-2 hover:ring-2`}
             onClick={clearInputs}
           >
-            <i className="pi pi-delete-left text-white"></i>
+            <i title='Temizle' className="pi pi-times p-0.5 text-white"></i>
           </button>
         </div>
       </div>

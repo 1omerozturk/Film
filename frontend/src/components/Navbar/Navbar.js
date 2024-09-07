@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import LogoutButton from '../Auth/LogOutButton'
+import { BiSolidMoviePlay } from 'react-icons/bi'
 import {
   useHistory,
   useLocation,
 } from 'react-router-dom/cjs/react-router-dom.min'
 import showToast from '../Alert/ShowToast'
 import { slide as Menu } from 'react-burger-menu'
-import { Sidebar } from "flowbite-react";
+import { Sidebar } from 'flowbite-react'
 import './Navbar.css' // react-burger-menu için gerekli CSS dosyasını import edin
 
 const Navbar = ({ setSearchTerm }) => {
@@ -15,14 +15,21 @@ const Navbar = ({ setSearchTerm }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const history = useHistory()
   const location = useLocation()
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const [inputValue,setInputValue]=useState('');
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
+
+  const clear=()=>{
+    setInputValue('');
+    setSearchTerm('');
+  }
 
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value)
+    setInputValue(event.target.value)
   }
 
   useEffect(() => {
@@ -45,35 +52,53 @@ const Navbar = ({ setSearchTerm }) => {
   }
 
   return (
-        <Menu >
-        {location.pathname !== '/' && (
-          <Link to="/">
-            <button className="menu-item px-1 ml-5 py-2 bg-sky-500 w-1/2  text-white rounded-full font-semibold hover:bg-blue-700">
-              <i className="pi pi-home text-2xl px-2 text-white"></i>
-              Anasayfa
-            </button>
-          </Link>
-        )}
-        {location.pathname === '/' || location.pathname === '/admin' ? (
-          <div className="menu-item">
-            <input
-              onChange={handleInputChange}
-              className="rounded-3xl p-2 text-lg bg-transparent border-2 border-gray-600 placeholder:text-slate-300 focus:ring-blue-600 focus:ring-2 hover:border-sky-600 text-white px-3 font-semibold w-full text-nowrap"
-              placeholder="Film ara"
-              size={80}
-            />
-          </div>
+    <Menu>
+      {location.pathname !== '/' && (
+        <Link to="/">
+          <button className="menu-item px-1 ml-5 py-2 bg-sky-500 w-1/2  text-white rounded-full font-semibold hover:bg-blue-700">
+            <i className="pi pi-home text-2xl px-2 text-white"></i>
+            Anasayfa
+          </button>
+        </Link>
+      )}
+      {location.pathname === '/' || location.pathname === '/admin' ? (
+        <div className="menu-item">
+          <input
+          value={inputValue}
+            onChange={handleInputChange}
+            className="rounded-3xl p-2 text-lg bg-transparent border-2 border-gray-600 placeholder:text-slate-300 focus:ring-blue-600 focus:ring-2 hover:border-sky-600 text-white px-2 mx-3 font-semibold text-nowrap w-fit"
+            placeholder="Film ara"
+          >
+          </input>
+          <i onClick={clear} className={`${inputValue===''?'invisible ':''}pi pi-times text-xs absolute mx-1 mt-3 cursor-pointer`}></i>
+        </div>
+      ) : (
+        ''
+      )}
+      <div className="">
+        {isAuthenticated ? (
+          <>
+            <Link to={isAuthenticated && '/admin'}>
+              <button className=" text-sky-600 ml-5 bg-slate-300 w-1/2 rounded-full p-2 active:text-black active:bg-slate-100 text-xl font-semibold">
+                <i className="pi pi-user pr-3 text-2xl text-black"></i>
+
+                {user}
+              </button>
+            </Link>
+          </>
         ) : (
-          ''
+          <></>
         )}
+      </div>
+      {location.pathname !== '/watchList' && (
         <div className="">
           {isAuthenticated ? (
             <>
-              <Link to={isAuthenticated && '/admin'}>
-                <button className=" text-sky-600 ml-5 bg-slate-300 w-1/2 rounded-full p-2 active:text-black active:bg-slate-100 text-xl font-semibold">
-                  <i className="pi pi-user pr-3 text-2xl text-black"></i>
-
-                  {user}
+              <Link to={isAuthenticated && '/watchList'}>
+                <button className=" text-sky-600 ml-5 bg-slate-300 w-2/3 rounded-full p-2 active:text-black active:bg-slate-100 text-xl font-semibold">
+                  <i className="pi pi-video pr-3 text-2xl text-sky-500"></i>
+                  {/* <BiSolidMoviePlay className='w-1/2' /> */}
+                  İzleme Listem
                 </button>
               </Link>
             </>
@@ -81,34 +106,35 @@ const Navbar = ({ setSearchTerm }) => {
             <></>
           )}
         </div>
-        <div className="">
-          {!isAuthenticated ? (
-            <>
-              <Link
-                to="/login"
-                className="bg-slate-500 hover:bg-blue-700 text-white font-bold mx-2 py-2 px-4 rounded"
-              >
-                <i className="pi pi-sign-in px-2 text-white"></i>
-                Giriş
-              </Link>
-              <Link to="/register">
-                <button className=" bg-slate-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  <i className="pi pi-user-plus px-2 text-white"></i>
-                  Kayıt Ol
-                </button>
-              </Link>
-            </>
-          ) : (
-            <button
-              onClick={handleLogout}
-              className="menu-item px-1 ml-5 py-2 bg-red-500 w-1/2  text-white rounded-full font-semibold hover:bg-red-700"
+      )}
+      <div className="">
+        {!isAuthenticated ? (
+          <>
+            <Link
+              to="/login"
+              className="bg-slate-500 hover:bg-blue-700 text-white font-bold mx-2 py-2 px-4 rounded"
             >
-              <i className="pi pi-sign-out text-2xl px-2 text-black"></i>
-              Çıkış
-            </button>
-          )}
-        </div>
-      </Menu>
+              <i className="pi pi-sign-in px-2 text-white"></i>
+              Giriş
+            </Link>
+            <Link to="/register">
+              <button className=" bg-slate-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <i className="pi pi-user-plus px-2 text-white"></i>
+                Kayıt Ol
+              </button>
+            </Link>
+          </>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="menu-item px-1 ml-5 py-2 bg-red-500 w-1/2  text-white rounded-full font-semibold hover:bg-red-700"
+          >
+            <i className="pi pi-sign-out text-2xl px-2 text-black"></i>
+            Çıkış
+          </button>
+        )}
+      </div>
+    </Menu>
   )
 }
 

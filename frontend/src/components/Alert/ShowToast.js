@@ -27,15 +27,7 @@ const showToast=(message,type)=>{
                 hideProgressBar:false,
                 closeOnClick:true}
                 );
-                break;      
-        case 'danger':
-            toast.dismiss(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar:false,
-                closeOnClick:true}
-                );
-                break;      
+                break;       
     }
 }
 export default showToast;

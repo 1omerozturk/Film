@@ -29,9 +29,12 @@
   }
   
   .bm-menu  {
-    background: #373a47;
+    background: #373a47 ;
     padding: 2.5em 0em 0;
     font-size: 1.15em;
+    overflow:scroll;
+    overflow-y: hidden;
+    overflow-x: hidden;
   }
  
   .bm-morph-shape {

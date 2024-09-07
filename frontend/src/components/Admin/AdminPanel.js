@@ -5,6 +5,7 @@ import { deleteMovieById, fetchMovies } from '../../Api/api'
 import MovieForm from '../Movie/MovieForm'
 import BgImage from '../../images/bg.jpeg'
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
+import Loading from '../Loading/Loading'
 
 const AdminPanel = ({ searchTerm }) => {
   const [movies, setMovies] = useState([])
@@ -135,11 +136,14 @@ const AdminPanel = ({ searchTerm }) => {
     }
     loadMovies()
   }
+ if(filteredMovies.length!==0)
   return (
+
     <div
       style={{ backgroundImage: `url(${BgImage})` }}
-      className="grid grid-cols-6"
+      className="grid grid-cols-6 min-h-screen"
     >
+      
       <MovieForm movie={editingMovie} onFormSubmit={handleFormSubmit} />
 
       <div className="w-auto col-span-5">
@@ -147,8 +151,8 @@ const AdminPanel = ({ searchTerm }) => {
           Filmlerim
         </h1>
         <ul className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {filteredMovies
-            ? filteredMovies.map((movie) => (
+          {
+          filteredMovies.map((movie) => (
                 <li
                   className="rounded-2xl text-center mb-0 pb-0   bg-gradient-to-b to-slate-300 text-white px-2 my-0 h-full via-sky-400 from-black"
                   key={movie._id}
@@ -181,12 +185,18 @@ const AdminPanel = ({ searchTerm }) => {
                     </button>
                   </div>
                 </li>
-              ))
-            : ''}
+          ))
+        }
+
         </ul>
       </div>
     </div>
-  )
+      )
+      else{
+        return(
+          <Loading/>
+        )
+      }
 }
 
 export default AdminPanel

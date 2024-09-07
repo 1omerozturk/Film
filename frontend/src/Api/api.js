@@ -108,6 +108,62 @@ export const getUser=async(userId)=>{
   }
 }
 
+
+// Burada kaldım...
+
+
+export const addWatchList=async (userId,movieId)=>{
+  const token=localStorage.getItem('token');
+  try {
+    const response=await axios.post(`${API_URL2}/users/add-watch-list`, {userId,
+      movieId,},
+      {
+        
+        headers:{
+          Authorization:`Bearer ${token}`
+        },
+        
+      },
+     
+    );
+    return response.data;
+
+  } catch (error) {
+    console.log("addWatchList Frontend hatası: " ,error)
+  }
+}
+
+export const getWathcList=async(userId)=>{
+  const token=localStorage.getItem('token');
+  try {
+    const response=await axios.get(`${API_URL2}/users/getWatchList`,{
+      headers:{
+        Authorization:`Bearer ${token}`
+        },
+        params:{userId}
+    });
+    return response.data;
+  } catch (error) {
+    console.log('Frontend getWatchList hatası ',error)
+  }
+}
+
+export const deleteWatchListById=async(userId,movieId)=>{
+  const token=localStorage.getItem('token');
+  try {
+    const response=await axios.delete(`${API_URL2}/users/delete`,{
+      headers:{
+        Authorization:`Bearer ${token}`
+        },
+        params:{userId,movieId},
+      })
+      return response;
+    }
+    catch (error) {
+      console.log('Frontend watchList delete hatası ',error)
+    }
+}
+
 // Yorum Ekle
 export const createReview = async (movieId, reviewData) => {
   try {

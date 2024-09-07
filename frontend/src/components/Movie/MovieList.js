@@ -1,19 +1,37 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Bg from '../../images/bg.jpeg'
-import { fetchMovies} from '../../Api/api'
+import { fetchMovies, addWatchList } from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
+import showToast from '../Alert/ShowToast'
+import Loading from '../Loading/Loading'
 const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
   const [movies, setMovies] = useState([])
   const [filteredMovies, setFilteredMovies] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState({})
+
+  const handleOnClick = (movie) => {
+    if (user.length !== 0) {
+      addWatchList(user._id, movie._id)
+      showToast(`${movie.title} İzleme lisesine eklendi.`, 'info')
+    }
+  }
 
   useEffect(() => {
     const loadMovies = async () => {
       const response = await fetchMovies()
 
       setMovies(response.data)
+      if (localStorage.getItem('token')) {
+        const userName = localStorage.getItem('user')
+        if (userName) {
+          const user = JSON.parse(userName)
+          setUser(user)
+        }
+      }
     }
     loadMovies()
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -39,11 +57,10 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
       setFilteredMovies(filtered)
     } else if (filterDate !== '') {
       const filtered = movies.filter(
-        (movie) => movie.release_date === filterDate,
+        (movie) => movie.release_date.toString() === filterDate.toString(),
       )
       setFilteredMovies(filtered)
-    }
-    else if (sortBy !== '') {
+    } else if (sortBy !== '') {
       let sortedMovies = [...movies]
       switch (sortBy) {
         case 'popularityAsc':
@@ -72,27 +89,37 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
     } else {
       setFilteredMovies(movies)
     }
+    // if (localStorage.getItem('token')) {
+    //   const userName = localStorage.getItem('user')
+    //   if (userName) {
+    //     const user = JSON.parse(userName.username)
+    //     console.log(user)
+    //     setUser(user)
+    //   }
+    // }
   }, [searchTerm, movies, filter, sortBy, filterDate])
 
+  // if (filteredMovies.length===0 || movies.length===0) {
+  if ((loading && filteredMovies.length === 0) || movies.length === 0) {
+    return (
+    <Loading/>
+    ) // watchList boş veya null ise yükleniyor mesajı göster
+  }
   return (
-    <div
-      style={{ background: { Bg } }}
-      className="mx-5 movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-16"
-    >
+    <div className="mx-5 h-full movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-16">
       {filteredMovies
         ? filteredMovies.map((movie) => (
-          
             <div
-              title={movie.title.length}
+              title={movie.title}
               key={movie._id}
-              className="movie-item hover:shadow-lg hover:transition-shadow delay-200 hover:shadow-black relative"
+              className="movie-item relative"
             >
               <div
                 title={movie.release_date}
-                className="grid absolute bg-slate-400 bg-opacity-60 text-center items-end p-1 rounded-full right-0 w-fit"
+                className="grid absolute bg-slate-400 hover:bg-black hover:text-white bg-opacity-60 text-center items-end p-1 rounded-full right-0 w-fit"
               >
                 <CiCalendarDate
-                  className="text-white rounded-full items-center"
+                  className="text-white hover:rotate-180  after:rotate-180 hover:transition-transform hover:duration-700 duration-500 rounded-full items-center"
                   size={30}
                 />
                 <b className="text-white">{movie.release_date}</b>
@@ -104,7 +131,7 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
                   className="grid absolute text-center items-end rounded-full bg-black  p-1 w-fit"
                 >
                   <CiStar
-                    className="bg-amber-500 rounded-full text-white"
+                    className="bg-amber-500 rounded-full hover:rotate-180 transition-transform delay-100 duration-500 text-white"
                     size={30}
                   />
                   <b className="text-amber-500">{movie?.rating?.toFixed(1)}</b>
@@ -117,34 +144,51 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
                 to={`/movie/${movie._id}`}
               >
                 <img
-                  className="h-[500px] rounded-lg shadow-sm shadow-blue-800 w-full"
+                  className="h-[500px] rounded-lg  hover:shadow-lg hover:transition-shadow delay-50  duration-500 hover:shadow-black w-full"
                   src={movie.poster_url}
                   alt={movie.title}
                 />
-
-                {/* 
+              </Link>
+              {/* 
         Türleri sıralama ve yazdırmak
 */}
 
-                <div className="text-center">
-                  <div
-                    title={movie.genre}
-                    className="text-center p-1 rounded-full  w-full mx-auto font-bold"
-                  >
-                    <input
-                      type="text"
-                      placeholder="Tür"
-                      value={movie.genre.join(', ')}
-                      readOnly
-                      className="w-full text-center px-4 py-2 border font-semibold border-gray-300 rounded-md  bg-gradient-to-r from-slate-700 to-black "
-                    />
-                  </div>
+              <div className="text-center">
+                <div
+                  title={movie.genre}
+                  className="text-center p-1 rounded-full  w-full mx-auto font-bold"
+                >
+                  <input
+                    type="text"
+                    placeholder="Tür"
+                    value={movie.genre.join(', ')}
+                    readOnly
+                    className="w-full text-center px-4 py-2 border font-semibold border-gray-300 rounded-md  bg-gradient-to-t from-indigo-300 via-sky-300
+                    to-indigo-500 "
+                  />
                 </div>
+              </div>
 
-                <div className="mt-1 text-xl rounded-2xl p-2  text-center bg-gradient-to-l to-blue-400 from-slate-900 text-white ">
-                  {movie.title}
-                </div>
-              </Link>
+              <div
+                title="İzleme listesine ekle"
+                className={`text-center relative cursor-pointer ${
+                  user ? '' : 'collapse pointer-events-none'
+                } text-black`}
+              >
+                <button
+                  onClick={() => handleOnClick(movie)}
+                  className="w-fit mx-auto hover:ease-in hover:duration-300 hover:bg-black hover:text-white text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
+                >
+                  <i className=" pi pi-plus text-sky-500 border-1  p-1.5 rounded-lg text-md font-bold hover:bg-white hover:text-indigo-500 hover:rotate-90 hover:transition-transform hover:duration-700 mx-2"></i>
+                  İzleme Listesine Ekle
+                </button>
+              </div>
+
+              <div className="mt-1 text-xl rounded-2xl p-2  text-center bg-gradient-to-l to-blue-400 from-slate-900 text-white ">
+                {movie.title.length > 20
+                  ? `${movie.title.substring(0, 20)}...`
+                  : movie.title}
+              </div>
             </div>
           ))
         : movies.map((movie) => (
@@ -161,11 +205,28 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
                   src={movie.poster_url}
                   alt={movie.title}
                 />
-                <h3 className="mt-1 rounded-2xl p-2 text-center bg-gradient-to-l to-blue-400 from-slate-900 text-white ">
-                {(movie.title).length > 20 ? `${(movie.title).substring(0, 20)}...` : movie.title}
-                  
-                </h3>
               </Link>
+              {user ? (
+                <div
+                  title="İzleme listesine ekle"
+                  className={`text-center relative cursor-pointer ${
+                    user ? '' : 'collapse pointer-events-none'
+                  } text-black`}
+                >
+                  <button
+                    onClick={() => handleOnClick(movie)}
+                    className="w-fit mx-auto hover:ease-in hover:duration-300 hover:bg-black hover:text-white text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
+                  >
+                    <i className=" pi pi-plus text-sky-500 border-1  p-1.5 rounded-lg text-md font-bold hover:bg-white hover:text-indigo-500 hover:rotate-90 hover:transition-transform hover:duration-700 mx-2"></i>
+                    İzleme Listesine Ekle
+                  </button>
+                </div>
+              ) : (
+                ''
+              )}
+              <h3 className="mt-1 rounded-2xl p-2 text-center bg-gradient-to-l to-blue-400 from-slate-900 text-white ">
+                {movie.title}
+              </h3>
             </div>
           ))}
     </div>
