@@ -6,7 +6,7 @@ const showToast=(message,type)=>{
         case 'success':
             toast.success(message, {   
                 position: "top-right",
-                autoClose: 5000,
+                autoClose: 3500,
                 hideProgressBar: false,
                 closeOnClick: true}
                 );
@@ -14,7 +14,7 @@ const showToast=(message,type)=>{
         case 'error':
             toast.error(message, {
                         position: "top-right",
-                        autoClose: 5000,
+                        autoClose: 3500,
                         hideProgressBar:false,
                         closeOnClick:true}
                         );
@@ -23,7 +23,7 @@ const showToast=(message,type)=>{
         case 'info':
             toast.info(message, {
                 position: "top-right",
-                autoClose: 5000,
+                autoClose:3500,
                 hideProgressBar:false,
                 closeOnClick:true}
                 );

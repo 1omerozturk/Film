@@ -31,16 +31,20 @@ useEffect(()=>{
       }
       if(review){
         await updateReview(review._id,reviewData);
+        onReviewAdded();
+      setRating(1)
+      setComment('')
       }
       else{
 
         await createReview(movieId, reviewData)
+        onReviewAdded();
+      setRating(1)
+      setComment('')
       }
       const response=await getMovieReviews(movieId)
       setReviews(response)
-      onReviewAdded();
-      setRating(1)
-      setComment('')
+      
     } catch (error) {
       console.error(error)
     }

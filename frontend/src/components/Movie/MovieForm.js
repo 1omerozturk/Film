@@ -10,6 +10,7 @@ const MovieForm = ({ movie, onFormSubmit }) => {
     'Fantastik', 'Tarih', 'Müzik', 'Gizem', 'Spor', 'Savaş', 'Western'
   ];
   
+  const [value,setValue]=useState('')
 
   const [title, setTitle] = useState('');
   const [director, setDirector] = useState('');

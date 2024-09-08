@@ -28,160 +28,173 @@ export const loginUser = (userData) => {
 }
 
 export const addMovie = async (movieData) => {
- 
-    const token = await localStorage.getItem('token')
-    const response = await axios.post(`${API_URL}/movies`, movieData, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
-      },
-    })
-    console.log('Movie added successfully:', response.data)
-    return response
- 
+  const token = await localStorage.getItem('token')
+  const response = await axios.post(`${API_URL}/movies`, movieData, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
+    },
+  })
+  console.log('Movie added successfully:', response.data)
+  return response
 }
 
-const API_URL2 = 'http://localhost:5000/api';
+const API_URL2 = 'http://localhost:5000/api'
 
 // Yorumları Getir
 export const getMovieReviews = async (movieId) => {
   try {
-    const response = await axios.get(`${API_URL2}/movies/${movieId}/reviews`
-      
-      // Yorumlar herkes tarafından görülebilir olduğu  için tokene gerek yok 
+    const response = await axios.get(
+      `${API_URL2}/movies/${movieId}/reviews`,
+
+      // Yorumlar herkes tarafından görülebilir olduğu  için tokene gerek yok
       // const token = localStorage.getItem('token'); // Token'ı ayrı bir değişkene alın
       // , {
       // headers: {
       //   Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
       // },
-    // }
-  
-  );
-    if(response.data.length>0)return response.data;
-    else return "Yorum yok";
+      // }
+    )
+    if (response.data.length > 0) return response.data
+    else return 'Yorum yok'
   } catch (error) {
     console.error(
       'Yorumlar getirilirken hata oluştu:',
       error.response ? error.response.data : error.message,
-    );
-  }
-};
-
-
-export const getGenreByCode = async (code) => {
-  
-      const response = await axios.get(`${API_URL2}/genre/${code}`);
-      return response.data;
-};
-
-
-export const deleteMovieReview=async(movieId,reviewId)=>{
-  try {
-    const token=localStorage.getItem('token');
-    const response=await axios.delete(`${API_URL2}/movies/${movieId}/reviews/${reviewId}`,
-      {
-        headers:{
-          Authorization:`Bearer ${token}`,
-        },
-      });
-      return response.data;
-  } catch (error) {
-    console.error('Yorum silinirken hata oluştu: ',
-      error.response? error.response.data:error.message
     )
   }
 }
 
-export const getUser=async(userId)=>{
+export const getGenreByCode = async (code) => {
+  const response = await axios.get(`${API_URL2}/genre/${code}`)
+  return response.data
+}
+
+export const deleteMovieReview = async (movieId, reviewId) => {
   try {
-    const token=localStorage.getItem('token');
-    const response=await axios.get(`${API_URL2}/movies/${userId}/reviews`, {
+    const token = localStorage.getItem('token')
+    const response = await axios.delete(
+      `${API_URL2}/movies/${movieId}/reviews/${reviewId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    return response.data
+  } catch (error) {
+    console.error(
+      'Yorum silinirken hata oluştu: ',
+      error.response ? error.response.data : error.message,
+    )
+  }
+}
+
+export const getUser = async (userId) => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(`${API_URL2}/movies/${userId}/reviews`, {
       headers: {
         Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
       },
-    });
-    return response.data;
+    })
+    return response.data
   } catch (error) {
     console.error(
       'Kullanıcı adı bulunamadı:',
-      error.response? error.response.data:error.message,
+      error.response ? error.response.data : error.message,
     )
   }
 }
 
-
 // Burada kaldım...
 
-
-export const addWatchList=async (userId,movieId)=>{
-  const token=localStorage.getItem('token');
+export const addWatchList = async (userId, movieId) => {
+  const token = localStorage.getItem('token')
   try {
-    const response=await axios.post(`${API_URL2}/users/add-watch-list`, {userId,
-      movieId,},
+    const response = await axios.post(
+      `${API_URL2}/users/add-watch-list`,
+      { userId, movieId },
       {
-        
-        headers:{
-          Authorization:`Bearer ${token}`
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        
       },
-     
-    );
-    return response.data;
-
+    )
+    return response.data
   } catch (error) {
-    console.log("addWatchList Frontend hatası: " ,error)
+    console.log('addWatchList Frontend hatası: ', error)
   }
 }
 
-export const getWathcList=async(userId)=>{
-  const token=localStorage.getItem('token');
+export const getWathcList = async (userId) => {
+  const token = localStorage.getItem('token')
   try {
-    const response=await axios.get(`${API_URL2}/users/getWatchList`,{
-      headers:{
-        Authorization:`Bearer ${token}`
-        },
-        params:{userId}
+    const response = await axios.get(`${API_URL2}/users/getWatchList`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { userId },
+    })
+    return response.data
+  } catch (error) {
+    console.log('Frontend getWatchList hatası ', error)
+  }
+}
+
+export const deleteWatchListById = async (userId, movieId) => {
+  const token = localStorage.getItem('token')
+  try {
+    const response = await axios.delete(`${API_URL2}/users/delete`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { userId, movieId },
+    })
+    return response
+  } catch (error) {
+    console.log('Frontend watchList delete hatası ', error)
+  }
+}
+
+
+export const getWatchListById = async (movieId, userId) => {
+  const token = localStorage.getItem('token');
+
+  try {
+    const response = await axios.get(`${API_URL2}/users/getWatchListById`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { movieId, userId },
     });
-    return response.data;
+    return response.data.exists; // Artık exists değerini döndürürüz
   } catch (error) {
-    console.log('Frontend getWatchList hatası ',error)
+    console.log('Frontend getWatchListById hatası', error);
   }
-}
-
-export const deleteWatchListById=async(userId,movieId)=>{
-  const token=localStorage.getItem('token');
-  try {
-    const response=await axios.delete(`${API_URL2}/users/delete`,{
-      headers:{
-        Authorization:`Bearer ${token}`
-        },
-        params:{userId,movieId},
-      })
-      return response;
-    }
-    catch (error) {
-      console.log('Frontend watchList delete hatası ',error)
-    }
-}
+};
 
 // Yorum Ekle
 export const createReview = async (movieId, reviewData) => {
   try {
-    const token = localStorage.getItem('token'); // Token'ı ayrı bir değişkene alın
-    const response = await axios.post(`${API_URL2}/movies/${movieId}/reviews`, reviewData, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
+    const token = localStorage.getItem('token') // Token'ı ayrı bir değişkene alın
+    const response = await axios.post(
+      `${API_URL2}/movies/${movieId}/reviews`,
+      reviewData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
+        },
       },
-    });
-    console.log('Yorum eklendi:', response.data);
-    return response.data;
+    )
+    console.log('Yorum eklendi:', response.data)
+    return response.data
   } catch (error) {
     console.error(
       'Yorum eklenirken hata oluştu:',
       error.response ? error.response.data : error.message,
-    );
+    )
   }
-};
+}
 
 export const updateMovie = (id, movieData) => {
   const token = localStorage.getItem('token')
@@ -191,13 +204,13 @@ export const updateMovie = (id, movieData) => {
     },
   })
 }
-export const updateReview=(reviewId,reviewData)=>{
-const token=localStorage.getItem('token')
-return axios.put(`${API_URL2}/reviews/${reviewId}`,reviewData,{
-  headers:{
-    Authorization:`Bearer ${token}`,
-},
-})
+export const updateReview = (reviewId, reviewData) => {
+  const token = localStorage.getItem('token')
+  return axios.put(`${API_URL2}/reviews/${reviewId}`, reviewData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
 }
 
 export const logOut = () => {

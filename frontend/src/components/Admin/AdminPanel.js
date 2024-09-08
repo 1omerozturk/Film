@@ -7,12 +7,14 @@ import BgImage from '../../images/bg.jpeg'
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'
 import Loading from '../Loading/Loading'
 
-const AdminPanel = ({ searchTerm }) => {
+const AdminPanel = ({ searchTerm, filterDate, filter, sortBy }) => {
   const [movies, setMovies] = useState([])
   const [editingMovie, setEditingMovie] = useState(null)
   const [error, setError] = useState(null)
   const [confirmed, setConfirmed] = useState(null)
   const [filteredMovies, setFilteredMovies] = useState([])
+
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -22,7 +24,7 @@ const AdminPanel = ({ searchTerm }) => {
     loadMovies()
   }, [])
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (searchTerm !== '') {
       const filtered = movies.filter((movie) =>
         movie.title.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -31,7 +33,71 @@ const AdminPanel = ({ searchTerm }) => {
     } else {
       setFilteredMovies(movies)
     }
-  }, [searchTerm, movies])
+  }, [searchTerm, movies]) */
+  useEffect(() => {
+    if (searchTerm !== '') {
+      const filtered = movies.filter((movie) =>
+        movie.title.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+      setFilteredMovies(filtered)
+    } else if (filter !== '' && filter !== 'Tür' && filterDate !== '') {
+      const filtered = movies.filter(
+        (movie) =>
+          movie.genre.some((e) =>
+            e?.toLowerCase().includes(filter?.toLowerCase()),
+          ) && movie.release_date === filterDate,
+      )
+      setFilteredMovies(filtered)
+    } else if (filter !== '' && filter !== 'Tür') {
+      const filtered = movies.filter((movie) =>
+        movie.genre.some((e) =>
+          e?.toLowerCase().includes(filter?.toLowerCase()),
+        ),
+      )
+      setFilteredMovies(filtered)
+    } else if (filterDate !== '') {
+      const filtered = movies.filter(
+        (movie) => movie.release_date.toString() === filterDate.toString(),
+      )
+      setFilteredMovies(filtered)
+    } else if (sortBy !== '') {
+      let sortedMovies = [...movies]
+      switch (sortBy) {
+        case 'popularityAsc':
+          sortedMovies.sort((a, b) => a.rating - b.rating)
+          break
+        case 'popularityDesc':
+          sortedMovies.sort((a, b) => b.rating - a.rating)
+          break
+        case 'nameAsc':
+          sortedMovies.sort((a, b) => a.title.localeCompare(b.title))
+          break
+
+        case 'nameDesc':
+          sortedMovies.sort((a, b) => b.title.localeCompare(a.title))
+          break
+        case 'dateAsc':
+          sortedMovies.sort((a, b) => a.release_date - b.release_date)
+          break
+        case 'dateDesc':
+          sortedMovies.sort((a, b) => b.release_date - a.release_date)
+          break
+        default:
+          break
+      }
+      setFilteredMovies(sortedMovies)
+    } else {
+      setFilteredMovies(movies)
+    }
+    // if (localStorage.getItem('token')) {
+    //   const userName = localStorage.getItem('user')
+    //   if (userName) {
+    //     const user = JSON.parse(userName.username)
+    //     console.log(user)
+    //     setUser(user)
+    //   }
+    // }
+  }, [searchTerm, movies, filter, sortBy, filterDate])
 
   const handleEditClick = (movie) => {
     setEditingMovie(movie)
@@ -136,67 +202,61 @@ const AdminPanel = ({ searchTerm }) => {
     }
     loadMovies()
   }
- if(filteredMovies.length!==0)
-  return (
+  if (loading && filteredMovies && filteredMovies.length >0)
+    return (
+      <div
+        style={{ backgroundImage: `url(${BgImage})` }}
+        className="grid grid-cols-6 min-h-screen"
+      >
+        <MovieForm movie={editingMovie} onFormSubmit={handleFormSubmit} />
 
-    <div
-      style={{ backgroundImage: `url(${BgImage})` }}
-      className="grid grid-cols-6 min-h-screen"
-    >
-      
-      <MovieForm movie={editingMovie} onFormSubmit={handleFormSubmit} />
-
-      <div className="w-auto col-span-5">
-        <h1 className="text-center text-white font-extrabold font-mono">
-          Filmlerim
-        </h1>
-        <ul className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {
-          filteredMovies.map((movie) => (
-                <li
-                  className="rounded-2xl text-center mb-0 pb-0   bg-gradient-to-b to-slate-300 text-white px-2 my-0 h-full via-sky-400 from-black"
-                  key={movie._id}
+        <div className="w-auto col-span-5">
+          <h1 className="text-center text-white font-extrabold font-mono">
+            Filmlerim
+          </h1>
+          <ul className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            {filteredMovies.map((movie) => (
+              <li
+                className="rounded-2xl text-center mb-0 pb-0   bg-gradient-to-b to-slate-300 text-white px-2 my-0 h-full via-sky-400 from-black"
+                key={movie._id}
+              >
+                <Link
+                  style={{ textDecoration: 'none' }}
+                  to={`/movie/${movie._id}`}
                 >
-                  <Link
-                    style={{ textDecoration: 'none' }}
-                    to={`/movie/${movie._id}`}
-                  >
-                    <div className="h-[80px] my-3 font-extrabold font-mono text-xl">
-                      {movie.title}
-                    </div>
-                    <img
-                      className="w-full aspect-[3/4] select-none mx-auto mb-4 rounded-xl hover:shadow-xl hover:shadow-blue-900 object-cover hover:transition hover:duration-700 hover:ease-linear"
-                      src={movie.poster_url}
-                      alt={movie.title}
-                    />
-                  </Link>
-                  <div className="btn-group gap-2 my-auto mb-4">
-                    <button
-                      className="text-lg w-fit mx-auto bg-lime-600 px-2 rounded-full transition duration-0 hover:transition hover:duration-1000 hover:ease-in-out hover:text-lime-500 hover:bg-white"
-                      onClick={() => handleEditClick(movie)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(movie)}
-                      className="w-fit text-lg mx-auto bg-rose-600 px-2 rounded-full transition duration-0  hover:text-rose-500 hover:transition hover:duration-1000 hover:ease-in-out hover:bg-white"
-                    >
-                      Delete
-                    </button>
+                  <div className="h-[80px] my-3 font-extrabold font-mono text-xl">
+                    {movie.title}
                   </div>
-                </li>
-          ))
-        }
-
-        </ul>
+                  <img
+                    className="w-full aspect-[3/4] select-none mx-auto mb-4 rounded-xl hover:shadow-xl hover:shadow-blue-900 object-cover hover:transition hover:duration-700 hover:ease-linear"
+                    src={movie.poster_url}
+                    alt={movie.title}
+                  />
+                </Link>
+                <div className="btn-group gap-2 my-auto mb-4">
+                  <button
+                    className="text-lg w-fit mx-auto bg-lime-600 px-2 rounded-full transition duration-0 hover:transition hover:duration-1000 hover:ease-in-out hover:text-lime-500 hover:bg-white"
+                    onClick={() => handleEditClick(movie)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(movie)}
+                    className="w-fit text-lg mx-auto bg-rose-600 px-2 rounded-full transition duration-0  hover:text-rose-500 hover:transition hover:duration-1000 hover:ease-in-out hover:bg-white"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
-      )
-      else{
-        return(
-          <Loading/>
-        )
-      }
+    )
+    else if(filteredMovies.length===0 && movies.length>0){
+      return <div className="flex justify-center items-center h-screen">No Movies Found</div>
+    }
+  else return <Loading />
 }
 
 export default AdminPanel

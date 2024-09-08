@@ -87,7 +87,7 @@ const WatchList = () => {
       <h1 className="text-center text-black font-extrabold font-mono">İzleme Listem</h1>
     <div className="w-auto flex justify-center items-center h-full">
       <ul
-       className="justify-items-center md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3 items-center"
+       className="justify-items-center grid grid-flow md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3 items-center"
        >
         {watchList.map((movieObj, index) => (
           <li 

@@ -32,7 +32,7 @@ const MovieDetail = () => {
   }, [id])
 
   const handleReviewAdded = () => {
-    setReviewsUpdated((prev) => !prev) // Değer ters çevrilir, böylece `useEffect` tetiklenir
+    setReviewsUpdated((prev) => !prev) 
   }
 
   if (!movie) return <div>Loading...</div>
