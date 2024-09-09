@@ -6,12 +6,13 @@ const Home = ({ searchTerm }) => {
 const [filter,setFilter]=useState('');
 const [filterDate,setFilterDate]=useState('');
 const [sortBy,setSortBy]=useState('')
+const [isOpenSlider,setIsOpenSlider]=useState(true)
 
   return (
     <div className="py-1 h-full min-h-screen">
        
-       <FilterMovie setFilterDate={setFilterDate} setSortBy={setSortBy} setFilter={setFilter}  />
-      <MovieList filter={filter} sortBy={sortBy} filterDate={filterDate} searchTerm={searchTerm} />
+       <FilterMovie setFilterDate={setFilterDate} setIsOpenSlider={setIsOpenSlider} setSortBy={setSortBy} setFilter={setFilter}  />
+      <MovieList filter={filter} isOpenSlider={isOpenSlider} sortBy={sortBy} filterDate={filterDate} searchTerm={searchTerm} />
     </div>
   )
 }

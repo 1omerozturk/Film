@@ -3,14 +3,29 @@ import { Link } from 'react-router-dom'
 import { fetchMovies, addWatchList,getWathcList,fetchMovieById } from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
 import showToast from '../Alert/ShowToast'
+import allGenres from '../Genre'
+
 import Loading from '../Loading/Loading'
-const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
+
+import {Swiper,SwiperSlide} from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import 'swiper/css/virtual';
+import { Autoplay, Navigation,Pagination, EffectCoverflow, Virtual } from 'swiper/modules';
+
+
+const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => {
   const [movies, setMovies] = useState([])
+  const [filterGenre,setFilterGenre]=useState('')
   const [filteredMovies, setFilteredMovies] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState({})
   const [watchList, setWatchList] = useState([]);
 
+  useEffect(()=>{
+    
+  },[isOpenSlider])
   useEffect(()=>{
     const user = JSON.parse(localStorage.getItem('user'))
     setUser(user)
@@ -131,19 +146,86 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
     } else {
       setFilteredMovies(movies)
     }
-    // if (localStorage.getItem('token')) {
-    //   const userName = localStorage.getItem('user')
-    //   if (userName) {
-    //     const user = JSON.parse(userName.username)
-    //     console.log(user)
-    //     setUser(user)
-    //   }
-    // }
   }, [searchTerm, movies, filter, sortBy, filterDate])
 
-  // if (filteredMovies.length===0 || movies.length===0) {
+
+
   if (!loading && filteredMovies && filteredMovies.length>0)
       return (
+    <div>
+    {/* allgenres swipper */}
+    <div className={`${!isOpenSlider?'hidden':''}  mx-20 px-10 cursor-pointer rounded-full bg-transparent text-center`}>
+      <Swiper
+      spaceBetween={100}
+      loop={true}
+      slidesPerView={6}
+      modules={[Autoplay]}
+      autoplay={{
+        delay:1000,
+        disableOnInteraction: false,
+      }}
+      pagination={{
+        clickable: true,
+      }}
+      >
+        {allGenres.map((genre, index) => (
+          <SwiperSlide key={index}
+          >
+              <div
+              onClick={()=>setFilterGenre(genre)}
+              className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
+              >{genre.split(' ').length>1?genre.split(' ')[0] +' .'+genre.split(' ')[1][0]:genre}</div>
+          </SwiperSlide>
+        ))
+      }
+      </Swiper>
+    </div>
+
+
+          <hr className={`${!isOpenSlider?'hidden':''}  border-8 opacity-20 mx-20 border-black rounded-xl mt-5`}/>
+    <div
+      className={`${!isOpenSlider?'hidden':''}  mx-20 py-2 px-10   drop-shadow-xl`}
+    > 
+ <Swiper
+      effect={'coverflow'}
+      coverflowEffect={{
+        rotate: 50,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+        slideShadows: true,
+      }}
+      autoplay={{
+        delay: 3000,
+        disableOnInteraction: false,
+      }}
+      pagination={{
+        clickable: true,
+      }}
+      navigation={true}
+      modules={[Autoplay,EffectCoverflow, Navigation,Virtual]}
+      autoHeight={false}
+      spaceBetween={50}
+      slidesPerView={3}
+      onSlideChange={() => console.log('slide change')}
+      onSwiper={(swiper) => console.log(swiper)}
+    >
+      {movies.map((movie)=>
+      (
+        <SwiperSlide title={movie.title}
+                
+        className='justify-center sm:px-2 md:px-4 lg:px-12 h-fit  text-center' key={movie._id}>
+          <Link  to={`/movie/${movie._id}`}>
+          <div className="bg-black text-center">
+            <img height={'100%'} className='hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out'  src={movie.poster_url} alt={movie.title} />
+          </div>
+          </Link>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+    </div>
+   
+    <hr className={`${!isOpenSlider?'hidden':''} border-8 opacity-20 mx-20 border-black rounded-xl`}/>
         <div className="mx-5 h-full movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-16">
           {filteredMovies
             ? filteredMovies.map((movie) => (
@@ -293,6 +375,7 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy }) => {
                   </h3>
                 </div>
               ))}
+        </div>
         </div>
       )
       else if(filteredMovies.length===0 && movies.length>0){

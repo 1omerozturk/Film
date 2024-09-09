@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-
-const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
+import allGenres from '../Genre'
+const FilterMovie = ({ setFilter, setFilterDate, setSortBy,setIsOpenSlider }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isOpenS, setIsOpenS] = useState(false)
   const [isEmpty, setIsEmpty] = useState(true)
   const [selectedYear, setSelectedYear] = useState('')
   const [selectedGenre, setSelectedGenre] = useState('')
@@ -44,6 +45,8 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
+    setIsOpenS(!isOpenS)
+    setIsOpenSlider(isOpenS)
     if (isOpen) {
       clearInputs()
     }
@@ -72,28 +75,28 @@ const FilterMovie = ({ setFilter, setFilterDate, setSortBy }) => {
     }
   }
 
-  const allGenres = [
-    'Aksiyon',
-    'Drama',
-    'Komedi',
-    'Korku',
-    'Bilim Kurgu',
-    'Romantik',
-    'Gerilim',
-    'Macera',
-    'Animasyon',
-    'Biyografi',
-    'Suç',
-    'Belgesel',
-    'Aile',
-    'Fantastik',
-    'Tarih',
-    'Müzik',
-    'Gizem',
-    'Spor',
-    'Savaş',
-    'Western',
-  ]
+  // const allGenres = [
+  //   'Aksiyon',
+  //   'Drama',
+  //   'Komedi',
+  //   'Korku',
+  //   'Bilim Kurgu',
+  //   'Romantik',
+  //   'Gerilim',
+  //   'Macera',
+  //   'Animasyon',
+  //   'Biyografi',
+  //   'Suç',
+  //   'Belgesel',
+  //   'Aile',
+  //   'Fantastik',
+  //   'Tarih',
+  //   'Müzik',
+  //   'Gizem',
+  //   'Spor',
+  //   'Savaş',
+  //   'Western',
+  // ]
 
   return (
     <div className={`pt-0 bg-transparent ${!isOpen?'animate-pulse':''}`}>

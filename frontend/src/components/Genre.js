@@ -1,0 +1,23 @@
+const allGenres = [
+    'Aksiyon',
+    'Drama',
+    'Komedi',
+    'Korku',
+    'Bilim Kurgu',
+    'Romantik',
+    'Gerilim',
+    'Macera',
+    'Animasyon',
+    'Biyografi',
+    'Suç',
+    'Belgesel',
+    'Aile',
+    'Fantastik',
+    'Tarih',
+    'Müzik',
+    'Gizem',
+    'Spor',
+    'Savaş',
+    'Western',
+  ]
+  export default allGenres;
