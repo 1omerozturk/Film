@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchMovies, addWatchList,getWathcList,fetchMovieById } from '../../Api/api'
+import { fetchMovies, addWatchList,getWathcList,fetchMovieById } from '../../api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
 import showToast from '../Alert/ShowToast'
 import allGenres from '../Genre'
@@ -152,42 +152,115 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
 
   if (!loading && filteredMovies && filteredMovies.length>0)
       return (
-    <div>
-    {/* allgenres swipper */}
-    <div className={`${!isOpenSlider?'hidden':''}  mx-20 px-10 cursor-pointer rounded-full bg-transparent text-center`}>
-      <Swiper
-      spaceBetween={100}
+//     <div>
+//     {/* allgenres swipper */}
+//     <div className={`${!isOpenSlider?'hidden':''}  mx-20 px-10 cursor-pointer rounded-full bg-transparent text-center`}>
+//       <Swiper
+//       spaceBetween={100}
+//       loop={true}
+//       slidesPerView={6}
+//       modules={[Autoplay]}
+//       autoplay={{
+//         delay:1000,
+//         disableOnInteraction: false,
+//       }}
+//       pagination={{
+//         clickable: true,
+//       }}
+//       >
+//         {allGenres.map((genre, index) => (
+//           <SwiperSlide key={index}
+//           >
+//               <div
+//               onClick={()=>setFilterGenre(genre)}
+//               className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
+//               >{genre.split(' ').length>1?genre.split(' ')[0] +' .'+genre.split(' ')[1][0]:genre}</div>
+//           </SwiperSlide>
+//         ))
+//       }
+//       </Swiper>
+//     </div>
+
+
+//           <hr className={`${!isOpenSlider?'hidden':''}  border-8 opacity-20 mx-20 border-black rounded-xl mt-5`}/>
+//     <div
+//       className={`${!isOpenSlider?'hidden':''}  mx-20 py-2 px-10   drop-shadow-xl`}
+//     > 
+//  <Swiper
+//       effect={'coverflow'}
+//       coverflowEffect={{
+//         rotate: 50,
+//         stretch: 0,
+//         depth: 100,
+//         modifier: 1,
+//         slideShadows: true,
+//       }}
+//       autoplay={{
+//         delay: 3000,
+//         disableOnInteraction: false,
+//       }}
+//       pagination={{
+//         clickable: true,
+//       }}
+//       navigation={true}
+//       modules={[Autoplay,EffectCoverflow, Navigation,Virtual]}
+//       autoHeight={false}
+//       spaceBetween={50}
+//       slidesPerView={3}
+//       onSlideChange={() => console.log('slide change')}
+//       onSwiper={(swiper) => console.log(swiper)}
+//     >
+//       {movies.map((movie)=>
+//       (
+//         <SwiperSlide title={movie.title}
+                
+//         className='justify-center sm:px-2 md:px-4 lg:px-12 h-fit  text-center' key={movie._id}>
+//           <Link  to={`/movie/${movie._id}`}>
+//           <div className="bg-black text-center">
+//             <img height={'100%'} className='hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out'  src={movie.poster_url} alt={movie.title} />
+//           </div>
+//           </Link>
+//         </SwiperSlide>
+//       ))}
+//     </Swiper>
+//     </div>
+<div>
+  {/* allgenres Swiper */}
+  <div className={`${!isOpenSlider ? 'hidden' : ''} mx-4 sm:mx-10 md:mx-20 px-4 sm:px-8 md:px-10 cursor-pointer rounded-full bg-transparent text-center`}>
+    <Swiper
+      spaceBetween={20}
       loop={true}
-      slidesPerView={6}
+      slidesPerView={2} // Mobilde 2, büyük ekranlarda ise aşağıda artırılacak
+      breakpoints={{
+        640: { slidesPerView: 3, spaceBetween: 30 },
+        768: { slidesPerView: 4, spaceBetween: 40 },
+        1024: { slidesPerView: 6, spaceBetween: 50 },
+      }}
       modules={[Autoplay]}
       autoplay={{
-        delay:1000,
+        delay: 1000,
         disableOnInteraction: false,
       }}
-      pagination={{
-        clickable: true,
-      }}
-      >
-        {allGenres.map((genre, index) => (
-          <SwiperSlide key={index}
+      pagination={{ clickable: true }}
+    >
+      {allGenres.map((genre, index) => (
+        <SwiperSlide key={index}>
+          <div
+            onClick={() => setFilterGenre(genre)}
+            className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
           >
-              <div
-              onClick={()=>setFilterGenre(genre)}
-              className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
-              >{genre.split(' ').length>1?genre.split(' ')[0] +' .'+genre.split(' ')[1][0]:genre}</div>
-          </SwiperSlide>
-        ))
-      }
-      </Swiper>
-    </div>
+            {genre.split(' ').length > 1 ? genre.split(' ')[0] + ' .' + genre.split(' ')[1][0] : genre}
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  </div>
 
+  <hr className={`${!isOpenSlider ? 'hidden' : ''} border-8 opacity-20 mx-4 sm:mx-10 md:mx-20 border-black rounded-xl mt-5`} />
 
-          <hr className={`${!isOpenSlider?'hidden':''}  border-8 opacity-20 mx-20 border-black rounded-xl mt-5`}/>
-    <div
-      className={`${!isOpenSlider?'hidden':''}  mx-20 py-2 px-10   drop-shadow-xl`}
-    > 
- <Swiper
-      effect={'coverflow'}
+  <div className={`${!isOpenSlider ? 'hidden' : ''} mx-4 sm:mx-10 md:mx-20 py-2 px-4 sm:px-8 md:px-10 drop-shadow-xl`}>
+    <Swiper
+      effect="coverflow"
       coverflowEffect={{
         rotate: 50,
         stretch: 0,
@@ -199,31 +272,35 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
         delay: 3000,
         disableOnInteraction: false,
       }}
-      pagination={{
-        clickable: true,
-      }}
-      navigation={true}
-      modules={[Autoplay,EffectCoverflow, Navigation,Virtual]}
+      pagination={{ clickable: true }}
+      navigation
+      modules={[Autoplay, EffectCoverflow, Navigation, Virtual]}
       autoHeight={false}
-      spaceBetween={50}
-      slidesPerView={3}
+      spaceBetween={20} // Mobilde daha az boşluk
+      slidesPerView={1} // Mobilde tek slide
+      breakpoints={{
+        640: { slidesPerView: 2, spaceBetween: 30 },
+        768: { slidesPerView: 3, spaceBetween: 40 },
+        1024: { slidesPerView: 3, spaceBetween: 50 },
+      }}
       onSlideChange={() => console.log('slide change')}
       onSwiper={(swiper) => console.log(swiper)}
     >
-      {movies.map((movie)=>
-      (
-        <SwiperSlide title={movie.title}
-                
-        className='justify-center sm:px-2 md:px-4 lg:px-12 h-fit  text-center' key={movie._id}>
-          <Link  to={`/movie/${movie._id}`}>
-          <div className="bg-black text-center">
-            <img height={'100%'} className='hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out'  src={movie.poster_url} alt={movie.title} />
-          </div>
+      {movies.map((movie) => (
+        <SwiperSlide title={movie.title} className="justify-center sm:px-2 md:px-4 lg:px-12 h-fit text-center" key={movie._id}>
+          <Link to={`/movie/${movie._id}`}>
+            <div className="bg-black text-center">
+              <img
+                className="hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out w-full h-auto"
+                src={movie.poster_url}
+                alt={movie.title}
+              />
+            </div>
           </Link>
         </SwiperSlide>
       ))}
     </Swiper>
-    </div>
+  </div>
    
     <hr className={`${!isOpenSlider?'hidden':''} border-8 opacity-20 mx-20 border-black rounded-xl`}/>
         <div className="mx-5 h-full movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-16">

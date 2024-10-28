@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:5000/api'
+const API_URL = 'https://film-zk2t.onrender.com/api'
 
 export const fetchMovies = () => {
   return axios.get(`${API_URL}/movies`)
@@ -38,7 +38,7 @@ export const addMovie = async (movieData) => {
   return response
 }
 
-const API_URL2 = 'http://localhost:5000/api'
+const API_URL2 = 'https://film-zk2t.onrender.com/api'
 
 // Yorumları Getir
 export const getMovieReviews = async (movieId) => {

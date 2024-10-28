@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { loginUser } from '../../Api/api'
+import { loginUser } from '../../api/api'
 import 'react-toastify/dist/ReactToastify.css'
 import { Link, NavLink } from 'react-router-dom/cjs/react-router-dom.min'
 import showToast from '../Alert/ShowToast'

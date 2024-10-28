@@ -4,7 +4,7 @@ import ReviewForm from '../Reviews/ReviewForm'
 import ReviewList from '../Reviews/ReviewList'
 
 import BgImage from '../../images/bg.jpeg'
-import { fetchMovieById, getMovieReviews } from '../../Api/api'
+import { fetchMovieById, getMovieReviews } from '../../api/api'
 
 const MovieDetail = () => {
   const { id } = useParams()
