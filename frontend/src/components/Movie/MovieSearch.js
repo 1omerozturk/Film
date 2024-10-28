@@ -4,7 +4,7 @@ import axios from 'axios'
 const MovieSearch = () => {
   const [title, setTitle] = useState('')
   const [movies, setMovies] = useState([])
-  const api="http://localhost:5000/api";
+  const api='https://film-zk2t.onrender.com/api'
   const searchMovies = async () => {
     try {
       const token=localStorage.getItem('token')
