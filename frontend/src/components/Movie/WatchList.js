@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getWathcList, fetchMovieById, deleteWatchListById } from "../../api/api";
+import { getWathcList, fetchMovieById, deleteWatchListById } from "../../Api/api";
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import showToast from '../Alert/ShowToast'
 import Loading from "../Loading/Loading";

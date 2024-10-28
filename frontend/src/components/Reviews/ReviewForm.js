@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { createReview, fetchMovies, getMovieReviews, updateReview } from '../../api/api'
+import { createReview, fetchMovies, getMovieReviews, updateReview } from '../../Api/api'
 import ReactStars from 'react-rating-stars-component'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 

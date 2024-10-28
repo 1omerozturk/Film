@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { deleteMovieById, fetchMovies } from '../../api/api'
+import { deleteMovieById, fetchMovies } from '../../Api/api'
 import MovieForm from '../Movie/MovieForm'
 import BgImage from '../../images/bg.jpeg'
 import { Link } from 'react-router-dom/cjs/react-router-dom.min'

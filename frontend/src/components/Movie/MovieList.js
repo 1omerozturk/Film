@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchMovies, addWatchList,getWathcList,fetchMovieById } from '../../api/api'
+import { fetchMovies, addWatchList,getWathcList,fetchMovieById } from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
 import showToast from '../Alert/ShowToast'
 import allGenres from '../Genre'

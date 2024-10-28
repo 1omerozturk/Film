@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { registerUser } from '../../api/api'
+import { registerUser } from '../../Api/api'
 import 'react-toastify/dist/ReactToastify.css'
 import showToast from '../Alert/ShowToast'
 

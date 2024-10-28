@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import React, { useEffect, useState } from 'react'
-import { getMovieReviews, deleteMovieReview, fetchMovies } from '../../api/api'
+import { getMovieReviews, deleteMovieReview, fetchMovies } from '../../Api/api'
 import ReactStars from 'react-rating-stars-component'
 import { format } from 'date-fns';
 

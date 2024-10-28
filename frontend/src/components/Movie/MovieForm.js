@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addMovie, updateMovie } from '../../api/api'
+import { addMovie, updateMovie } from '../../Api/api'
 import { CiCircleRemove } from 'react-icons/ci';
 
 const MovieForm = ({ movie, onFormSubmit }) => {
