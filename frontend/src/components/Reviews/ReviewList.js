@@ -39,8 +39,8 @@ const ReviewList = ({ movieId, onReviewAdded, setEditingReview }) => {
 
   return (
     <div className="">
-      <h3 className="text-rose-800 bg-gradient-to-r w-fit max-w-[100px] mx-auto my-4 p-2">
-        Yorumlar
+      <h3 className="text-rose-800 bg-gradient-to-r w-fit max-w-[180px] mx-auto my-4 p-2">
+        Yorumlar <i className='pi pi-comments text-yellow-400'></i>
       </h3>
       <div className="text-black bg-transparent w-1/2 px-1 mx-auto p-0.5 rounded-2xl grid grid-flow-row">
         {reviews ? (

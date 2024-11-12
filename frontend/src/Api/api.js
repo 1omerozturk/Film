@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_URL = 'https://film-zk2t.onrender.com/api'
+// const API_URL = 'https://film-zk2t.onrender.com/api'
+const API_URL = 'http://localhost:5000/api'
 
 export const fetchMovies = () => {
   return axios.get(`${API_URL}/movies`)
@@ -38,13 +39,12 @@ export const addMovie = async (movieData) => {
   return response
 }
 
-const API_URL2 = 'https://film-zk2t.onrender.com/api'
 
 // Yorumları Getir
 export const getMovieReviews = async (movieId) => {
   try {
     const response = await axios.get(
-      `${API_URL2}/movies/${movieId}/reviews`,
+      `${API_URL}/movies/${movieId}/reviews`,
 
       // Yorumlar herkes tarafından görülebilir olduğu  için tokene gerek yok
       // const token = localStorage.getItem('token'); // Token'ı ayrı bir değişkene alın
@@ -65,7 +65,7 @@ export const getMovieReviews = async (movieId) => {
 }
 
 export const getGenreByCode = async (code) => {
-  const response = await axios.get(`${API_URL2}/genre/${code}`)
+  const response = await axios.get(`${API_URL}/genre/${code}`)
   return response.data
 }
 
@@ -73,7 +73,7 @@ export const deleteMovieReview = async (movieId, reviewId) => {
   try {
     const token = localStorage.getItem('token')
     const response = await axios.delete(
-      `${API_URL2}/movies/${movieId}/reviews/${reviewId}`,
+      `${API_URL}/movies/${movieId}/reviews/${reviewId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -92,7 +92,7 @@ export const deleteMovieReview = async (movieId, reviewId) => {
 export const getUser = async (userId) => {
   try {
     const token = localStorage.getItem('token')
-    const response = await axios.get(`${API_URL2}/movies/${userId}/reviews`, {
+    const response = await axios.get(`${API_URL}/movies/${userId}/reviews`, {
       headers: {
         Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
       },
@@ -112,7 +112,7 @@ export const addWatchList = async (userId, movieId) => {
   const token = localStorage.getItem('token')
   try {
     const response = await axios.post(
-      `${API_URL2}/users/add-watch-list`,
+      `${API_URL}/users/add-watch-list`,
       { userId, movieId },
       {
         headers: {
@@ -129,7 +129,7 @@ export const addWatchList = async (userId, movieId) => {
 export const getWathcList = async (userId) => {
   const token = localStorage.getItem('token')
   try {
-    const response = await axios.get(`${API_URL2}/users/getWatchList`, {
+    const response = await axios.get(`${API_URL}/users/getWatchList`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -144,7 +144,7 @@ export const getWathcList = async (userId) => {
 export const deleteWatchListById = async (userId, movieId) => {
   const token = localStorage.getItem('token')
   try {
-    const response = await axios.delete(`${API_URL2}/users/delete`, {
+    const response = await axios.delete(`${API_URL}/users/delete`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -161,7 +161,7 @@ export const getWatchListById = async (movieId, userId) => {
   const token = localStorage.getItem('token');
 
   try {
-    const response = await axios.get(`${API_URL2}/users/getWatchListById`, {
+    const response = await axios.get(`${API_URL}/users/getWatchListById`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -178,7 +178,7 @@ export const createReview = async (movieId, reviewData) => {
   try {
     const token = localStorage.getItem('token') // Token'ı ayrı bir değişkene alın
     const response = await axios.post(
-      `${API_URL2}/movies/${movieId}/reviews`,
+      `${API_URL}/movies/${movieId}/reviews`,
       reviewData,
       {
         headers: {
@@ -206,7 +206,7 @@ export const updateMovie = (id, movieData) => {
 }
 export const updateReview = (reviewId, reviewData) => {
   const token = localStorage.getItem('token')
-  return axios.put(`${API_URL2}/reviews/${reviewId}`, reviewData, {
+  return axios.put(`${API_URL}/reviews/${reviewId}`, reviewData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
