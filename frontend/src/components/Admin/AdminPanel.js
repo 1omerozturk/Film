@@ -13,6 +13,7 @@ const AdminPanel = ({ searchTerm, filterDate, filter, sortBy }) => {
   const [error, setError] = useState(null)
   const [confirmed, setConfirmed] = useState(null)
   const [filteredMovies, setFilteredMovies] = useState([])
+  const [onView,setOnView]=useState(false)
 
   const [loading, setLoading] = useState(true)
 
@@ -24,16 +25,11 @@ const AdminPanel = ({ searchTerm, filterDate, filter, sortBy }) => {
     loadMovies()
   }, [])
 
-  /* useEffect(() => {
-    if (searchTerm !== '') {
-      const filtered = movies.filter((movie) =>
-        movie.title.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-      setFilteredMovies(filtered)
-    } else {
-      setFilteredMovies(movies)
-    }
-  }, [searchTerm, movies]) */
+
+  const handleView=()=>{
+    setOnView(!onView)
+  }
+
   useEffect(() => {
     if (searchTerm !== '') {
       const filtered = movies.filter((movie) =>
@@ -206,15 +202,20 @@ const AdminPanel = ({ searchTerm, filterDate, filter, sortBy }) => {
     return (
       <div
         style={{ backgroundImage: `url(${BgImage})` }}
-        className="grid grid-cols-6 min-h-screen"
+        className="md:grid-cols-3 min-h-screen"
       >
-        <MovieForm movie={editingMovie} onFormSubmit={handleFormSubmit} />
+        <div className="flex items-center justify-center pt-5">
+        <button onClick={handleView}  className={`${onView?'btn btn-outline-light':'btn btn-outline-danger'}`}>
+        {onView===true?'Film Ekle':'Kapat'}
+        </button>
+        </div>
+        <MovieForm movie={editingMovie} onView={onView} onFormSubmit={handleFormSubmit} />
 
-        <div className="w-auto col-span-5">
+        <div className="w-auto lg:col-span-full md:col-span-2 mt-3">
           <h1 className="text-center text-white font-extrabold font-mono">
             Filmlerim
           </h1>
-          <ul className="grid md:grid-cols-3 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          <ul className="grid md:grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filteredMovies.map((movie) => (
               <li
                 className="rounded-2xl text-center mb-0 pb-0   bg-gradient-to-b to-slate-300 text-white px-2 my-0 h-full via-sky-400 from-black"

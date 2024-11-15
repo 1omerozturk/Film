@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { addMovie, updateMovie } from '../../Api/api'
 import { CiCircleRemove } from 'react-icons/ci';
 
-const MovieForm = ({ movie, onFormSubmit }) => {
+const MovieForm = ({ movie, onFormSubmit,onView }) => {
 
   const allGenres = [
     'Aksiyon', 'Drama', 'Komedi', 'Korku', 'Bilim Kurgu', 'Romantik', 'Gerilim',
@@ -88,7 +88,7 @@ const MovieForm = ({ movie, onFormSubmit }) => {
   };
 
   return (
-    <div className="mt-16 h-fit  bg-gradient-to-t to-sky-300 via-gray-400 from-transparent shadow-md rounded-lg p-6">
+    <div className={`${onView?'collapse':''} mt-16 h-fit  bg-gradient-to-t to-sky-300 via-gray-400 from-transparent shadow-md rounded-lg p-6`}>
   <form onSubmit={handleSubmit}>
     <h3 className=" text-4xl  text-center font-semibold mb-4">{movie ? 'Film Güncelle' : 'Film Ekle'}</h3>
     <div className="mb-4">
@@ -112,14 +112,14 @@ const MovieForm = ({ movie, onFormSubmit }) => {
       />
     </div>
     <div className="mb-4 rounded-lg">
-      <div className='items-center justify-between grid grid-flow-col'>
+      <div className='items-center justify-between grid grid-cols-12 '>
 
     <input
       type="text"
       placeholder='Tür'
       value={genre.length>0?genre.join(', '):""}
       readOnly
-      className="w-full px-4 py-2 border font-semibold border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full px-4 py-2 col-span-11 border font-semibold border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
   <button>
     <CiCircleRemove
