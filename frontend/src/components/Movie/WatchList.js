@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getWathcList, fetchMovieById, deleteWatchListById } from "../../Api/api";
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import showToast from '../Alert/ShowToast'
 import Loading from "../Loading/Loading";
+import { get } from "mongoose";
 const WatchList = () => {
   const [watchList, setWatchList] = useState([]); // watchList'i boş array olarak başlattık
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const userName = localStorage.getItem("user");
-      if (userName) {
-        const parsedUser = JSON.parse(userName);
-        setUser(parsedUser);
-      }
+  const loadUserFromLocalStorage = useCallback(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) setUser(JSON.parse(storedUser))
     }
-  }, []); // Bu effect yalnızca bir kez çalışır
+  }, [])
   
 
   const handleDeleteClick=async(movieObj)=>{
@@ -28,42 +27,35 @@ const WatchList = () => {
     }
   }
 
-  useEffect(() => {
-    if (user && user._id) {
-      const fetchAllWatchLists = async (ids) => {
-        try {
-          const watchListArray = await Promise.all(
-            ids.map(async (id) => {
-              const response = await fetchMovieById(id);
-              return response.data; // Sadece data kısmını döndürüyoruz
-            })
-          );
-          setWatchList(watchListArray); // Tüm filmleri setWatchList'e aktarıyoruz
-          
-        } catch (error) {
-          console.log('Watchlist verileri çekilirken hata: ', error);
-        }
-       
-      };
-  
-      const loadWatchList = async () => {
-        try {
-          const response = await getWathcList(user._id);
-          const watchListArray = response?.watchList || []; // Null kontrolü
-          if (watchListArray.length > 0) {
-            await fetchAllWatchLists(watchListArray);
-          }
-        } catch (error) {
-          console.log("Watchlist yüklenirken hata:", error);
-        }
-        finally {
-          setLoading(false);
-        }
-      };
-  
-      loadWatchList();
+  const loadWatchList = useCallback(async () => {
+    if (!user?._id) return
+
+    try {
+      const { watchList: watchListIds = [] } = await getWathcList(user._id)
+      const watchListArray = await Promise.all(
+        watchListIds.map(async (id) => {
+          const response = await fetchMovieById(id)
+          return response.data
+        }),
+      )
+      setWatchList(watchListArray)
+    } catch (error) {
+      console.error('İzleme listesi yüklenirken hata:', error)
+    } finally {
+      setLoading(false)
     }
-  }, [user]);
+  }, [user])
+
+
+  useEffect(()=>{
+    loadUserFromLocalStorage()
+  },[loadUserFromLocalStorage])
+
+
+
+  useEffect(()=>{
+    if(user)loadWatchList()
+  },[user,loadWatchList])
 
   if (loading) {
     return (

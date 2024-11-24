@@ -1,95 +1,107 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchMovies, addWatchList,getWathcList,fetchMovieById } from '../../Api/api'
+import {
+  fetchMovies,
+  addWatchList,
+  getWathcList,
+  fetchMovieById,
+} from '../../Api/api'
 import { CiCalendarDate, CiStar } from 'react-icons/ci'
 import showToast from '../Alert/ShowToast'
 import allGenres from '../Genre'
 
 import Loading from '../Loading/Loading'
 
-import {Swiper,SwiperSlide} from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import 'swiper/css/virtual';
-import { Autoplay, Navigation,Pagination, EffectCoverflow, Virtual } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/navigation'
+import 'swiper/css/virtual'
+import {
+  Autoplay,
+  Navigation,
+  Pagination,
+  EffectCoverflow,
+  Virtual,
+} from 'swiper/modules'
 
-
-const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => {
+const MovieList = ({
+  searchTerm,
+  filter,
+  filterDate,
+  sortBy,
+  isOpenSlider,
+}) => {
   const [movies, setMovies] = useState([])
-  const [filterGenre,setFilterGenre]=useState('')
+  const [filterGenre, setFilterGenre] = useState('')
   const [filteredMovies, setFilteredMovies] = useState([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState({})
-  const [watchList, setWatchList] = useState([]);
+  const [user, setUser] = useState(null)
+  const [watchList, setWatchList] = useState([])
 
-  useEffect(()=>{
-    
-  },[isOpenSlider])
-  useEffect(()=>{
-    const user = JSON.parse(localStorage.getItem('user'))
-    setUser(user)
-  },[watchList])
-  const handleOnClick = (movie) => {
-    if (user.length !== 0) {
-      addWatchList(user._id, movie._id)
-      showToast(`${movie.title} İzleme lisesine eklendi.`, 'success')
+  useEffect(() => {}, [isOpenSlider])
+  const loadUserFromLocalStorage = useCallback(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) setUser(JSON.parse(storedUser))
+    }
+  }, [])
+
+  // İzleme listesine film ekler
+  const handleOnClick = async (movie) => {
+    if (!user) return showToast('Lütfen önce giriş yapın.', 'error')
+
+    try {
+      await addWatchList(user._id, movie._id)
+      showToast(`${movie.title} İzleme listesine eklendi.`, 'success')
+      loadWatchList() // Güncel izleme listesini yükler
+    } catch (error) {
+      showToast('İzleme listesi eklenirken hata oluştu.', 'error')
+      console.error(error)
     }
   }
 
-  useEffect(() => {
-    if (user && user._id) {
-      const fetchAllWatchLists = async (ids) => {
-        try {
-          const watchListArray = await Promise.all(
-            ids.map(async (id) => {
-              const response = await fetchMovieById(id);
-              return response.data; // Sadece data kısmını döndürüyoruz
-            })
-          );
-          setWatchList(watchListArray); // Tüm filmleri setWatchList'e aktarıyoruz
-          
-        } catch (error) {
-          console.log('Watchlist verileri çekilirken hata: ', error);
-        }
-       
-      };
-  
-      const loadWatchList = async () => {
-        try {
-          const response = await getWathcList(user._id);
-          const watchListArray = response?.watchList || []; // Null kontrolü
-          if (watchListArray.length > 0) {
-            await fetchAllWatchLists(watchListArray);
-          }
-        } catch (error) {
-          console.log("Watchlist yüklenirken hata:", error);
-        }
-        finally {
-          setLoading(false);
-        }
-      };
-  
-      loadWatchList();
-    }
-  }, [user]);
+  // İzleme listesini kullanıcı ID'sine göre yükler
+  const loadWatchList = useCallback(async () => {
+    if (!user?._id) return
 
-  useEffect(() => {
-    const loadMovies = async () => {
+    try {
+      const { watchList: watchListIds = [] } = await getWathcList(user._id)
+      const watchListArray = await Promise.all(
+        watchListIds.map(async (id) => {
+          const response = await fetchMovieById(id)
+          return response.data
+        }),
+      )
+      setWatchList(watchListArray)
+    } catch (error) {
+      console.error('İzleme listesi yüklenirken hata:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  // Tüm filmleri yükler
+  const loadMovies = useCallback(async () => {
+    try {
       const response = await fetchMovies()
-
       setMovies(response.data)
-      if (localStorage.getItem('token')) {
-        const userName = localStorage.getItem('user')
-        if (userName) {
-          const user = JSON.parse(userName)
-          setUser(user)
-        }
-      }
+    } catch (error) {
+      console.error('Filmler yüklenirken hata:', error)
     }
-    loadMovies()
-    setLoading(false)
   }, [])
+
+  // İlk yükleme sırasında kullanıcıyı ve verileri getirir
+  useEffect(() => {
+    loadUserFromLocalStorage()
+    loadMovies()
+  }, [loadUserFromLocalStorage, loadMovies])
+
+  // Kullanıcı değiştiğinde izleme listesini yükler
+  useEffect(() => {
+    if (user) loadWatchList()
+  }, [user, loadWatchList])
 
   useEffect(() => {
     if (searchTerm !== '') {
@@ -148,161 +160,180 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
     }
   }, [searchTerm, movies, filter, sortBy, filterDate])
 
+  if (!loading && filteredMovies && filteredMovies.length > 0)
+    return (
+      //     <div>
+      //     {/* allgenres swipper */}
+      //     <div className={`${!isOpenSlider?'hidden':''}  mx-20 px-10 cursor-pointer rounded-full bg-transparent text-center`}>
+      //       <Swiper
+      //       spaceBetween={100}
+      //       loop={true}
+      //       slidesPerView={6}
+      //       modules={[Autoplay]}
+      //       autoplay={{
+      //         delay:1000,
+      //         disableOnInteraction: false,
+      //       }}
+      //       pagination={{
+      //         clickable: true,
+      //       }}
+      //       >
+      //         {allGenres.map((genre, index) => (
+      //           <SwiperSlide key={index}
+      //           >
+      //               <div
+      //               onClick={()=>setFilterGenre(genre)}
+      //               className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
+      //               >{genre.split(' ').length>1?genre.split(' ')[0] +' .'+genre.split(' ')[1][0]:genre}</div>
+      //           </SwiperSlide>
+      //         ))
+      //       }
+      //       </Swiper>
+      //     </div>
 
+      //           <hr className={`${!isOpenSlider?'hidden':''}  border-8 opacity-20 mx-20 border-black rounded-xl mt-5`}/>
+      //     <div
+      //       className={`${!isOpenSlider?'hidden':''}  mx-20 py-2 px-10   drop-shadow-xl`}
+      //     >
+      //  <Swiper
+      //       effect={'coverflow'}
+      //       coverflowEffect={{
+      //         rotate: 50,
+      //         stretch: 0,
+      //         depth: 100,
+      //         modifier: 1,
+      //         slideShadows: true,
+      //       }}
+      //       autoplay={{
+      //         delay: 3000,
+      //         disableOnInteraction: false,
+      //       }}
+      //       pagination={{
+      //         clickable: true,
+      //       }}
+      //       navigation={true}
+      //       modules={[Autoplay,EffectCoverflow, Navigation,Virtual]}
+      //       autoHeight={false}
+      //       spaceBetween={50}
+      //       slidesPerView={3}
+      //       onSlideChange={() => console.log('slide change')}
+      //       onSwiper={(swiper) => console.log(swiper)}
+      //     >
+      //       {movies.map((movie)=>
+      //       (
+      //         <SwiperSlide title={movie.title}
 
-  if (!loading && filteredMovies && filteredMovies.length>0)
-      return (
-//     <div>
-//     {/* allgenres swipper */}
-//     <div className={`${!isOpenSlider?'hidden':''}  mx-20 px-10 cursor-pointer rounded-full bg-transparent text-center`}>
-//       <Swiper
-//       spaceBetween={100}
-//       loop={true}
-//       slidesPerView={6}
-//       modules={[Autoplay]}
-//       autoplay={{
-//         delay:1000,
-//         disableOnInteraction: false,
-//       }}
-//       pagination={{
-//         clickable: true,
-//       }}
-//       >
-//         {allGenres.map((genre, index) => (
-//           <SwiperSlide key={index}
-//           >
-//               <div
-//               onClick={()=>setFilterGenre(genre)}
-//               className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
-//               >{genre.split(' ').length>1?genre.split(' ')[0] +' .'+genre.split(' ')[1][0]:genre}</div>
-//           </SwiperSlide>
-//         ))
-//       }
-//       </Swiper>
-//     </div>
-
-
-//           <hr className={`${!isOpenSlider?'hidden':''}  border-8 opacity-20 mx-20 border-black rounded-xl mt-5`}/>
-//     <div
-//       className={`${!isOpenSlider?'hidden':''}  mx-20 py-2 px-10   drop-shadow-xl`}
-//     > 
-//  <Swiper
-//       effect={'coverflow'}
-//       coverflowEffect={{
-//         rotate: 50,
-//         stretch: 0,
-//         depth: 100,
-//         modifier: 1,
-//         slideShadows: true,
-//       }}
-//       autoplay={{
-//         delay: 3000,
-//         disableOnInteraction: false,
-//       }}
-//       pagination={{
-//         clickable: true,
-//       }}
-//       navigation={true}
-//       modules={[Autoplay,EffectCoverflow, Navigation,Virtual]}
-//       autoHeight={false}
-//       spaceBetween={50}
-//       slidesPerView={3}
-//       onSlideChange={() => console.log('slide change')}
-//       onSwiper={(swiper) => console.log(swiper)}
-//     >
-//       {movies.map((movie)=>
-//       (
-//         <SwiperSlide title={movie.title}
-                
-//         className='justify-center sm:px-2 md:px-4 lg:px-12 h-fit  text-center' key={movie._id}>
-//           <Link  to={`/movie/${movie._id}`}>
-//           <div className="bg-black text-center">
-//             <img height={'100%'} className='hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out'  src={movie.poster_url} alt={movie.title} />
-//           </div>
-//           </Link>
-//         </SwiperSlide>
-//       ))}
-//     </Swiper>
-//     </div>
-<div>
-  {/* allgenres Swiper */}
-  <div className={`${!isOpenSlider ? 'hidden' : ''} mx-4 sm:mx-10 md:mx-20 px-4 sm:px-8 md:px-10 cursor-pointer rounded-full bg-transparent text-center`}>
-    <Swiper
-      spaceBetween={20}
-      loop={true}
-      slidesPerView={2} // Mobilde 2, büyük ekranlarda ise aşağıda artırılacak
-      breakpoints={{
-        640: { slidesPerView: 3, spaceBetween: 30 },
-        768: { slidesPerView: 4, spaceBetween: 40 },
-        1024: { slidesPerView: 6, spaceBetween: 50 },
-      }}
-      modules={[Autoplay]}
-      autoplay={{
-        delay: 1000,
-        disableOnInteraction: false,
-      }}
-      pagination={{ clickable: true }}
-    >
-      {allGenres.map((genre, index) => (
-        <SwiperSlide key={index}>
-          <div
-            onClick={() => setFilterGenre(genre)}
-            className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
+      //         className='justify-center sm:px-2 md:px-4 lg:px-12 h-fit  text-center' key={movie._id}>
+      //           <Link  to={`/movie/${movie._id}`}>
+      //           <div className="bg-black text-center">
+      //             <img height={'100%'} className='hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out'  src={movie.poster_url} alt={movie.title} />
+      //           </div>
+      //           </Link>
+      //         </SwiperSlide>
+      //       ))}
+      //     </Swiper>
+      //     </div>
+      <div>
+        {/* allgenres Swiper */}
+        <div
+          className={`${
+            !isOpenSlider ? 'hidden' : ''
+          } mx-4 sm:mx-10 md:mx-20 px-4 sm:px-8 md:px-10 cursor-pointer rounded-full bg-transparent text-center`}
+        >
+          <Swiper
+            spaceBetween={20}
+            loop={true}
+            slidesPerView={2} // Mobilde 2, büyük ekranlarda ise aşağıda artırılacak
+            breakpoints={{
+              640: { slidesPerView: 3, spaceBetween: 30 },
+              768: { slidesPerView: 4, spaceBetween: 40 },
+              1024: { slidesPerView: 6, spaceBetween: 50 },
+            }}
+            modules={[Autoplay]}
+            autoplay={{
+              delay: 1000,
+              disableOnInteraction: false,
+            }}
+            pagination={{ clickable: true }}
           >
-            {genre.split(' ').length > 1 ? genre.split(' ')[0] + ' .' + genre.split(' ')[1][0] : genre}
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  </div>
+            {allGenres.map((genre, index) => (
+              <SwiperSlide key={index}>
+                <div
+                  onClick={() => setFilterGenre(genre)}
+                  className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
+                >
+                  {genre.split(' ').length > 1
+                    ? genre.split(' ')[0] + ' .' + genre.split(' ')[1][0]
+                    : genre}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 
-  <hr className={`${!isOpenSlider ? 'hidden' : ''} border-8 opacity-20 mx-4 sm:mx-10 md:mx-20 border-black rounded-xl mt-5`} />
+        <hr
+          className={`${
+            !isOpenSlider ? 'hidden' : ''
+          } border-8 opacity-20 mx-4 sm:mx-10 md:mx-20 border-black rounded-xl mt-5`}
+        />
 
-  <div className={`${!isOpenSlider ? 'hidden' : ''} mx-4 sm:mx-10 md:mx-20 py-2 px-4 sm:px-8 md:px-10 drop-shadow-xl`}>
-    <Swiper
-      effect="coverflow"
-      coverflowEffect={{
-        rotate: 50,
-        stretch: 0,
-        depth: 100,
-        modifier: 1,
-        slideShadows: true,
-      }}
-      autoplay={{
-        delay: 3000,
-        disableOnInteraction: false,
-      }}
-      pagination={{ clickable: true }}
-      navigation
-      modules={[Autoplay, EffectCoverflow, Navigation, Virtual]}
-      autoHeight={false}
-      spaceBetween={20} // Mobilde daha az boşluk
-      slidesPerView={1} // Mobilde tek slide
-      breakpoints={{
-        640: { slidesPerView: 2, spaceBetween: 30 },
-        768: { slidesPerView: 3, spaceBetween: 40 },
-        1024: { slidesPerView: 3, spaceBetween: 50 },
-      }}
-      onSlideChange={() => console.log('slide change')}
-      onSwiper={(swiper) => console.log(swiper)}
-    >
-      {movies.map((movie) => (
-        <SwiperSlide title={movie.title} className="justify-center sm:px-2 md:px-4 lg:px-12 h-fit text-center" key={movie._id}>
-          <Link to={`/movie/${movie._id}`}>
-            <div className="bg-black text-center">
-              <img
-                className="hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out w-full h-auto"
-                src={movie.poster_url}
-                alt={movie.title}
-              />
-            </div>
-          </Link>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  </div>
-   
-    <hr className={`${!isOpenSlider?'hidden':''} border-8 opacity-20 mx-20 border-black rounded-xl`}/>
+        <div
+          className={`${
+            !isOpenSlider ? 'hidden' : ''
+          } mx-4 sm:mx-10 md:mx-20 py-2 px-4 sm:px-8 md:px-10 drop-shadow-xl`}
+        >
+          <Swiper
+            effect="coverflow"
+            coverflowEffect={{
+              rotate: 50,
+              stretch: 0,
+              depth: 100,
+              modifier: 1,
+              slideShadows: true,
+            }}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+            pagination={{ clickable: true }}
+            navigation
+            modules={[Autoplay, EffectCoverflow, Navigation, Virtual]}
+            autoHeight={false}
+            spaceBetween={20} // Mobilde daha az boşluk
+            slidesPerView={1} // Mobilde tek slide
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 30 },
+              768: { slidesPerView: 3, spaceBetween: 40 },
+              1024: { slidesPerView: 3, spaceBetween: 50 },
+            }}
+            onSlideChange={() => console.log('slide change')}
+            onSwiper={(swiper) => console.log(swiper)}
+          >
+            {movies.map((movie) => (
+              <SwiperSlide
+                title={movie.title}
+                className="justify-center sm:px-2 md:px-4 lg:px-12 h-fit text-center"
+                key={movie._id}
+              >
+                <Link to={`/movie/${movie._id}`}>
+                  <div className="bg-black text-center">
+                    <img
+                      className="hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out w-full h-auto"
+                      src={movie.poster_url}
+                      alt={movie.title}
+                    />
+                  </div>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        <hr
+          className={`${
+            !isOpenSlider ? 'hidden' : ''
+          } border-8 opacity-20 mx-20 border-black rounded-xl`}
+        />
         <div className="mx-5 h-full movie-list grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-16">
           {filteredMovies
             ? filteredMovies.map((movie) => (
@@ -321,7 +352,7 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
                     />
                     <b className="text-white">{movie.release_date}</b>
                   </div>
-                  {movie.rating ? '' : (movie.rating = 5)}
+                  {/* {movie.rating ? '' : (movie.rating = 5)} */}
                   {movie.rating ? (
                     <div
                       title={movie.rating?.toFixed(1)}
@@ -331,7 +362,9 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
                         className="bg-amber-500 rounded-full hover:rotate-180 transition-transform delay-100 duration-500 text-white"
                         size={30}
                       />
-                      <b className="text-amber-500">{movie?.rating?.toFixed(1)}</b>
+                      <b className="text-amber-500">
+                        {movie?.rating?.toFixed(1)}
+                      </b>
                     </div>
                   ) : (
                     ''
@@ -349,7 +382,7 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
                   {/* 
             Türleri sıralama ve yazdırmak
     */}
-    
+
                   <div className="text-center">
                     <div
                       title={movie.genre}
@@ -365,35 +398,38 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
                       />
                     </div>
                   </div>
-                  
+
                   <div
-                    
                     className={`text-center relative cursor-pointer ${
-                      user? '' : 'collapse pointer-events-none'
+                      user ? '' : 'collapse pointer-events-none'
                     } text-black`}
                   >
-                    {watchList.some(movieObj => movieObj._id === movie._id) ? (
-                  <button
-                  className="w-fit mx-auto hover:ease-in hover:duration-300  text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
-                  title="İzleme listesinde mevcut"
-                    >
-                    <i className="pi pi-check text-green-600 border-1 border-green-600 p-1.5 rounded-lg text-md font-bold  mx-2"
-                    ></i>
-                    <span className="text-sm font-bold">İzleme listenizde Mevcut</span>
-                   </button>
-                    ):
-                    
-                    ( <button
-                      onClick={() => handleOnClick(movie)}
-                      className="w-fit mx-auto hover:ease-in hover:duration-300 hover:bg-black hover:text-white text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
-                      title='İzleme listesine ekle'
-                    >
-                      <i className=" pi pi-plus text-sky-500 border-1  p-1.5 rounded-lg text-md font-bold hover:bg-white hover:text-indigo-500 hover:rotate-90 hover:transition-transform hover:duration-700 mx-2"></i>
-                    <span className="text-sm font-bold">İzleme Listesine Ekle</span>
-                    </button>)
-                  }
+                    {watchList.some(
+                      (movieObj) => movieObj._id === movie._id,
+                    ) ? (
+                      <button
+                        className="w-fit mx-auto hover:ease-in hover:duration-300  text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
+                        title="İzleme listesinde mevcut"
+                      >
+                        <i className="pi pi-check text-green-600 border-1 border-green-600 p-1.5 rounded-lg text-md font-bold  mx-2"></i>
+                        <span className="text-sm font-bold">
+                          İzleme listenizde Mevcut
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleOnClick(movie)}
+                        className="w-fit mx-auto hover:ease-in hover:duration-300 hover:bg-black hover:text-white text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
+                        title="İzleme listesine ekle"
+                      >
+                        <i className=" pi pi-plus text-sky-500 border-1  p-1.5 rounded-lg text-md font-bold hover:bg-white hover:text-indigo-500 hover:rotate-90 hover:transition-transform hover:duration-700 mx-2"></i>
+                        <span className="text-sm font-bold">
+                          İzleme Listesine Ekle
+                        </span>
+                      </button>
+                    )}
                   </div>
-    
+
                   <div className="mt-1 text-xl rounded-2xl p-2  text-center bg-gradient-to-l to-blue-400 from-slate-900 text-white ">
                     {movie.title.length > 20
                       ? `${movie.title.substring(0, 20)}...`
@@ -416,33 +452,37 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
                       alt={movie.title}
                     />
                   </Link>
-                  {user? (
+                  {user ? (
                     <div
                       title="İzleme listesine ekle"
                       className={`text-center relative cursor-pointer ${
-                        user.length>0 ? '' : ' collapse pointer-events-none'
+                        user.length > 0 ? '' : ' collapse pointer-events-none'
                       } text-black`}
                     >
-                          {watchList.some(movieObj => movieObj._id === movie._id) ? (
-                  <button
-                  className="w-fit mx-auto hover:ease-in hover:duration-300  text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
-                  title="İzleme listesinde mevcut"
-                    >
-                    <i className="pi pi-check text-green-600 border-1 border-green-600 p-1.5 rounded-lg text-md font-bold  mx-2"
-                    ></i>
-                    <span className="text-sm font-bold">İzleme listenizde Mevcut</span>
-                   </button>
-                    ):
-                    
-                    ( <button
-                      onClick={() => handleOnClick(movie)}
-                      className="w-fit mx-auto hover:ease-in hover:duration-300 hover:bg-black hover:text-white text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
-                      title='İzleme listesine ekle'
-                    >
-                      <i className=" pi pi-plus text-sky-500 border-1  p-1.5 rounded-lg text-md font-bold hover:bg-white hover:text-indigo-500 hover:rotate-90 hover:transition-transform hover:duration-700 mx-2"></i>
-                    <span className="text-sm font-bold">İzleme Listesine Ekle</span>
-                    </button>)
-}
+                      {watchList.some(
+                        (movieObj) => movieObj._id === movie._id,
+                      ) ? (
+                        <button
+                          className="w-fit mx-auto hover:ease-in hover:duration-300  text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
+                          title="İzleme listesinde mevcut"
+                        >
+                          <i className="pi pi-check text-green-600 border-1 border-green-600 p-1.5 rounded-lg text-md font-bold  mx-2"></i>
+                          <span className="text-sm font-bold">
+                            İzleme listenizde Mevcut
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleOnClick(movie)}
+                          className="w-fit mx-auto hover:ease-in hover:duration-300 hover:bg-black hover:text-white text-sm  font-semibold border-2 border-sky-800 rounded-xl px-2 py-1.5  justify-between"
+                          title="İzleme listesine ekle"
+                        >
+                          <i className=" pi pi-plus text-sky-500 border-1  p-1.5 rounded-lg text-md font-bold hover:bg-white hover:text-indigo-500 hover:rotate-90 hover:transition-transform hover:duration-700 mx-2"></i>
+                          <span className="text-sm font-bold">
+                            İzleme Listesine Ekle
+                          </span>
+                        </button>
+                      )}
                     </div>
                   ) : (
                     ''
@@ -453,18 +493,16 @@ const MovieList = ({ searchTerm, filter, filterDate, sortBy, isOpenSlider }) => 
                 </div>
               ))}
         </div>
-        </div>
-      )
-      else if(filteredMovies.length===0 && movies.length>0){
-        return <div className="flex justify-center items-center h-screen">No Movies Found</div>
-      }
-    else{
-
-      return (
-        <Loading/>
-      )
-    }
-  
- 
+      </div>
+    )
+  else if (filteredMovies.length === 0 && movies.length > 0) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        No Movies Found
+      </div>
+    )
+  } else {
+    return <Loading />
+  }
 }
 export default MovieList
