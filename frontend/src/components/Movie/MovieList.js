@@ -83,10 +83,11 @@ const MovieList = ({
   }, [user])
 
   // Tüm filmleri yükler
-  const loadMovies = useCallback(async () => {
+  const loadMovies = useCallback(() => {
     try {
-      const response = await fetchMovies()
-      setMovies(response.data)
+       fetchMovies().then((res)=>{
+        setMovies(res.data)
+      })
     } catch (error) {
       console.error('Filmler yüklenirken hata:', error)
     }
@@ -96,7 +97,8 @@ const MovieList = ({
   useEffect(() => {
     loadUserFromLocalStorage()
     loadMovies()
-  }, [loadUserFromLocalStorage, loadMovies])
+    setLoading(false)
+  }, [loadMovies,loadUserFromLocalStorage])
 
   // Kullanıcı değiştiğinde izleme listesini yükler
   useEffect(() => {
@@ -162,79 +164,7 @@ const MovieList = ({
 
   if (!loading && filteredMovies && filteredMovies.length > 0)
     return (
-      //     <div>
-      //     {/* allgenres swipper */}
-      //     <div className={`${!isOpenSlider?'hidden':''}  mx-20 px-10 cursor-pointer rounded-full bg-transparent text-center`}>
-      //       <Swiper
-      //       spaceBetween={100}
-      //       loop={true}
-      //       slidesPerView={6}
-      //       modules={[Autoplay]}
-      //       autoplay={{
-      //         delay:1000,
-      //         disableOnInteraction: false,
-      //       }}
-      //       pagination={{
-      //         clickable: true,
-      //       }}
-      //       >
-      //         {allGenres.map((genre, index) => (
-      //           <SwiperSlide key={index}
-      //           >
-      //               <div
-      //               onClick={()=>setFilterGenre(genre)}
-      //               className="w-fit h-fit border-2 rounded-lg p-1 border-black genre-swiper-slide-title font-bold italic text-center text-indigo-800"
-      //               >{genre.split(' ').length>1?genre.split(' ')[0] +' .'+genre.split(' ')[1][0]:genre}</div>
-      //           </SwiperSlide>
-      //         ))
-      //       }
-      //       </Swiper>
-      //     </div>
-
-      //           <hr className={`${!isOpenSlider?'hidden':''}  border-8 opacity-20 mx-20 border-black rounded-xl mt-5`}/>
-      //     <div
-      //       className={`${!isOpenSlider?'hidden':''}  mx-20 py-2 px-10   drop-shadow-xl`}
-      //     >
-      //  <Swiper
-      //       effect={'coverflow'}
-      //       coverflowEffect={{
-      //         rotate: 50,
-      //         stretch: 0,
-      //         depth: 100,
-      //         modifier: 1,
-      //         slideShadows: true,
-      //       }}
-      //       autoplay={{
-      //         delay: 3000,
-      //         disableOnInteraction: false,
-      //       }}
-      //       pagination={{
-      //         clickable: true,
-      //       }}
-      //       navigation={true}
-      //       modules={[Autoplay,EffectCoverflow, Navigation,Virtual]}
-      //       autoHeight={false}
-      //       spaceBetween={50}
-      //       slidesPerView={3}
-      //       onSlideChange={() => console.log('slide change')}
-      //       onSwiper={(swiper) => console.log(swiper)}
-      //     >
-      //       {movies.map((movie)=>
-      //       (
-      //         <SwiperSlide title={movie.title}
-
-      //         className='justify-center sm:px-2 md:px-4 lg:px-12 h-fit  text-center' key={movie._id}>
-      //           <Link  to={`/movie/${movie._id}`}>
-      //           <div className="bg-black text-center">
-      //             <img height={'100%'} className='hover:shadow-xl hover:shadow-black delay-200 duration-300 hover:ease-in-out'  src={movie.poster_url} alt={movie.title} />
-      //           </div>
-      //           </Link>
-      //         </SwiperSlide>
-      //       ))}
-      //     </Swiper>
-      //     </div>
-      <div>
-        {/* allgenres Swiper */}
+          <div>
         <div
           className={`${
             !isOpenSlider ? 'hidden' : ''
@@ -306,8 +236,6 @@ const MovieList = ({
               768: { slidesPerView: 3, spaceBetween: 40 },
               1024: { slidesPerView: 3, spaceBetween: 50 },
             }}
-            onSlideChange={() => console.log('slide change')}
-            onSwiper={(swiper) => console.log(swiper)}
           >
             {movies.map((movie) => (
               <SwiperSlide
