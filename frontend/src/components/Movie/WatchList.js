@@ -3,7 +3,6 @@ import { getWathcList, fetchMovieById, deleteWatchListById } from "../../Api/api
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import showToast from '../Alert/ShowToast'
 import Loading from "../Loading/Loading";
-import { get } from "mongoose";
 const WatchList = () => {
   const [watchList, setWatchList] = useState([]); // watchList'i boş array olarak başlattık
   const [user, setUser] = useState({});
