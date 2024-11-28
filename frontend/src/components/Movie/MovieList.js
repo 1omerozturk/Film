@@ -20,7 +20,6 @@ import 'swiper/css/virtual'
 import {
   Autoplay,
   Navigation,
-  Pagination,
   EffectCoverflow,
   Virtual,
 } from 'swiper/modules'

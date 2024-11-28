@@ -3,21 +3,21 @@ import axios from 'axios'
 const API_URL = 'https://film-4dao.onrender.com/api'
 // const API_URL = 'http://localhost:5000/api'
 
-export const fetchMovies = () => {
-  return axios.get(`${API_URL}/movies`)
+export const fetchMovies = async() => {
+  return await axios.get(`${API_URL}/movies`)
 }
 
-export const fetchMovieById = (id) => {
-  return axios.get(`${API_URL}/movies/${id}`)
+export const fetchMovieById = async(id) => {
+  return await axios.get(`${API_URL}/movies/${id}`)
 }
 
-export const registerUser = (userData) => {
-  return axios.post(`${API_URL}/users/register`, userData)
+export const registerUser =async (userData) => {
+  return await axios.post(`${API_URL}/users/register`, userData)
 }
 
-export const deleteMovieById = (id) => {
+export const deleteMovieById = async(id) => {
   const token = localStorage.getItem('token')
-  return axios.delete(`${API_URL}/movies/${id}`, {
+  return await axios.delete(`${API_URL}/movies/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -29,7 +29,7 @@ export const loginUser = (userData) => {
 }
 
 export const addMovie = async (movieData) => {
-  const token = await localStorage.getItem('token')
+  const token = localStorage.getItem('token')
   const response = await axios.post(`${API_URL}/movies`, movieData, {
     headers: {
       Authorization: `Bearer ${token}`, // Token'ı başlığa ekle
