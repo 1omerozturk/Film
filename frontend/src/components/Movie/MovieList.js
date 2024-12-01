@@ -62,13 +62,12 @@ const MovieList = ({
     }
   }
 
-  const loadWatchList = useCallback(async () => {
+  const loadWatchList = useCallback(() => {
     if (!user?._id) return
-
     try {
-      const response = await getWathcList(user._id)
-      console.log('İzleme Listesi Yanıtı:', response)
-      setWatchList(response.watchList || [])
+      getWathcList(user._id).then((res) => {
+        setWatchList(res.watchList || [])
+      })
     } catch (error) {
       console.error('İzleme listesi yüklenirken hata:', error)
     }
@@ -76,19 +75,19 @@ const MovieList = ({
 
   const loadMovies = useCallback(async () => {
     try {
-      const response = await fetchMovies()
-      console.log('Filmler:', response.data)
-      setMovies(response.data || [])
+      await fetchMovies().then((res) => {
+        setMovies(res.data || [])
+      })
     } catch (error) {
       console.error('Filmler yüklenirken hata:', error)
     }
   }, [])
 
   useEffect(() => {
-    const init = async () => {
+    const init = () => {
       setLoading(true)
-      await loadUserFromLocalStorage()
-      await loadMovies()
+      loadUserFromLocalStorage()
+      loadMovies()
       setLoading(false)
     }
     init()
