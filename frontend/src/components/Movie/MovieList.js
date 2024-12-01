@@ -17,12 +17,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import 'swiper/css/virtual'
-import {
-  Autoplay,
-  Navigation,
-  EffectCoverflow,
-  Virtual,
-} from 'swiper/modules'
+import { Autoplay, Navigation, EffectCoverflow, Virtual } from 'swiper/modules'
 
 const MovieList = ({
   searchTerm,
@@ -39,67 +34,66 @@ const MovieList = ({
   const [watchList, setWatchList] = useState([])
 
   useEffect(() => {}, [isOpenSlider])
+
   const loadUserFromLocalStorage = useCallback(() => {
     const token = localStorage.getItem('token')
     if (token) {
       const storedUser = localStorage.getItem('user')
-      if (storedUser) setUser(JSON.parse(storedUser))
+      if (storedUser) {
+        setUser(JSON.parse(storedUser))
+      } else {
+        console.error('User bilgisi localStorage içinde yok.')
+      }
+    } else {
+      console.error('Token bulunamadı.')
     }
   }, [])
 
-  // İzleme listesine film ekler
   const handleOnClick = async (movie) => {
     if (!user) return showToast('Lütfen önce giriş yapın.', 'error')
 
     try {
       await addWatchList(user._id, movie._id)
       showToast(`${movie.title} İzleme listesine eklendi.`, 'success')
-      loadWatchList() // Güncel izleme listesini yükler
+      await loadWatchList()
     } catch (error) {
       showToast('İzleme listesi eklenirken hata oluştu.', 'error')
       console.error(error)
     }
   }
 
-  // İzleme listesini kullanıcı ID'sine göre yükler
   const loadWatchList = useCallback(async () => {
     if (!user?._id) return
 
     try {
-      const { watchList: watchListIds = [] } = await getWathcList(user._id)
-      const watchListArray = await Promise.all(
-        watchListIds.map(async (id) => {
-          const response = await fetchMovieById(id)
-          return response.data
-        }),
-      )
-      setWatchList(watchListArray)
+      const response = await getWathcList(user._id)
+      console.log('İzleme Listesi Yanıtı:', response)
+      setWatchList(response.watchList || [])
     } catch (error) {
       console.error('İzleme listesi yüklenirken hata:', error)
-    } finally {
-      setLoading(false)
     }
   }, [user])
 
-  // Tüm filmleri yükler
-  const loadMovies = useCallback(() => {
+  const loadMovies = useCallback(async () => {
     try {
-       fetchMovies().then((res)=>{
-        setMovies(res.data)
-      })
+      const response = await fetchMovies()
+      console.log('Filmler:', response.data)
+      setMovies(response.data || [])
     } catch (error) {
       console.error('Filmler yüklenirken hata:', error)
     }
   }, [])
 
-  // İlk yükleme sırasında kullanıcıyı ve verileri getirir
   useEffect(() => {
-    loadUserFromLocalStorage()
-    loadMovies()
-    setLoading(false)
-  }, [loadMovies,loadUserFromLocalStorage])
+    const init = async () => {
+      setLoading(true)
+      await loadUserFromLocalStorage()
+      await loadMovies()
+      setLoading(false)
+    }
+    init()
+  }, [loadUserFromLocalStorage, loadMovies])
 
-  // Kullanıcı değiştiğinde izleme listesini yükler
   useEffect(() => {
     if (user) loadWatchList()
   }, [user, loadWatchList])
@@ -163,14 +157,14 @@ const MovieList = ({
 
   if (!loading && filteredMovies && filteredMovies.length > 0)
     return (
-          <div>
+      <div>
         <div
           className={`${
             !isOpenSlider ? 'hidden' : ''
-          } mx-4 sm:mx-10 md:mx-20 px-4 sm:px-8 md:px-10 cursor-pointer rounded-full bg-transparent text-center`}
+          } w-full flex items-center justify-center pl-20 cursor-pointer rounded-full bg-transparent text-center`}
         >
           <Swiper
-            spaceBetween={20}
+            spaceBetween={10}
             loop={true}
             slidesPerView={2} // Mobilde 2, büyük ekranlarda ise aşağıda artırılacak
             breakpoints={{
@@ -206,11 +200,7 @@ const MovieList = ({
           } border-8 opacity-20 mx-4 sm:mx-10 md:mx-20 border-black rounded-xl mt-5`}
         />
 
-        <div
-          className={`${
-            !isOpenSlider ? 'hidden' : ''
-          } mx-4 sm:mx-10 md:mx-20 py-2 px-4 sm:px-8 md:px-10 drop-shadow-xl`}
-        >
+        <div className={`${!isOpenSlider ? 'hidden' : ''}  drop-shadow-xl`}>
           <Swiper
             effect="coverflow"
             coverflowEffect={{
@@ -229,12 +219,12 @@ const MovieList = ({
             modules={[Autoplay, EffectCoverflow, Navigation, Virtual]}
             autoHeight={false}
             spaceBetween={20} // Mobilde daha az boşluk
-            slidesPerView={1} // Mobilde tek slide
-            breakpoints={{
-              640: { slidesPerView: 2, spaceBetween: 30 },
-              768: { slidesPerView: 3, spaceBetween: 40 },
-              1024: { slidesPerView: 3, spaceBetween: 50 },
-            }}
+            slidesPerView={3} // Mobilde tek slide
+            // breakpoints={{
+            //   640: { slidesPerView: 3, spaceBetween: 30 },
+            //   768: { slidesPerView: 3, spaceBetween: 40 },
+            //   1024: { slidesPerView: 3, spaceBetween: 50 },
+            // }}
           >
             {movies.map((movie) => (
               <SwiperSlide
